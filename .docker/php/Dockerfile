@@ -2,7 +2,7 @@ FROM node:latest AS node
 
 FROM php:8.1-fpm AS fpm
 
-ARG COMPOSER_VERSION=2
+ARG COMPOSER_VERSION=2.2
 
 COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
@@ -13,7 +13,7 @@ RUN usermod -d /var/www/html www-data
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y git zip unzip libzip-dev libxml2 libxml2-dev libxslt-dev libsodium-dev libbz2-dev msmtp \
+    && apt-get install -y git zip unzip libzip-dev libxml2 libxml2-dev libxslt-dev libsodium-dev libbz2-dev libpq-dev msmtp \
     && docker-php-ext-install zip xsl sodium bz2
 
 RUN apt-get install -y \
@@ -23,7 +23,7 @@ RUN apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql soap opcache exif intl bcmath sockets
+RUN docker-php-ext-install pdo pdo_pgsql pgsql soap opcache exif intl bcmath sockets
 RUN docker-php-ext-install calendar gettext pcntl sysvmsg sysvsem sysvshm
 RUN pecl install redis \
     && docker-php-ext-enable redis
