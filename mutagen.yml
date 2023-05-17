@@ -1,0 +1,35 @@
+# Set up code synchronization.
+sync:
+  defaults:
+    flushOnCreate: true
+    mode: "two-way-resolved"
+    symlink:
+      mode: "posix-raw"
+    permissions:
+      defaultFileMode: "0644"
+      defaultDirectoryMode: "0775"
+    configurationBeta:
+      permissions:
+        defaultOwner: 'www-data'
+        defaultGroup: 'www-data'
+  code:
+    alpha: "."
+    beta: "docker://root@product-management-example/var/www/html"
+    ignore:
+      paths:
+        - .docker
+        - .idea
+        - .github
+        - docker-compose.yml
+        - mutagen.yml
+        - mutagen.yml.lock
+        - /vendor
+        - node_modules
+        - '*.tar.gz'
+        - '*.zip'
+        - '*.sql'
+        - '.ignore/memprof*'
+        - .phpstorm_helpers
+  vendor:
+    alpha: "./vendor"
+    beta: "docker://root@product-management-example/var/www/html/vendor"

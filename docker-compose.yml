@@ -1,0 +1,50 @@
+version: '3.9'
+services:
+  fpm:
+    container_name: 'product-management-example'
+    build:
+      context: .docker/php
+      target: fpm
+      args:
+        COMPOSER_VERSION: 2.2
+    env_file:
+      - .docker/php/.env
+    volumes:
+      - 'laravel-sync:/var/www/html:nocopy'
+      - '.docker/php/php.ini:/usr/local/etc/php/php.ini'
+      - '.docker/php/www.conf:/usr/local/etc/php-fpm.d/www.conf'
+
+  fpm_xdebug:
+    build:
+      context: .docker/php
+      target: fpm-debug
+    volumes:
+      - 'laravel-sync:/var/www/html:nocopy'
+      - '.docker/php/php.ini:/usr/local/etc/php/php.ini'
+      - '.docker/php/www.conf:/usr/local/etc/php-fpm.d/www.conf'
+    env_file:
+      - .docker/php/.env
+    environment:
+      PHP_IDE_CONFIG: serverName=localhost
+
+  web:
+    image: 'nginx:1.19'
+    volumes:
+      - 'laravel-sync:/var/www/html:nocopy'
+      - '.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf'
+      - '.docker/nginx/nginx.conf:/etc/nginx/nginx.conf'
+      - '.docker/nginx/ssl:/etc/nginx/ssl'
+      - '.docker/nginx/40-ownership-folder.sh:/docker-entrypoint.d/40-ownership-folder.sh'
+    ports:
+      - '127.0.0.1:80:80'
+      - '127.0.0.1:443:443'
+    depends_on:
+      fpm:
+        condition: service_started
+      fpm_xdebug:
+        condition: service_started
+volumes:
+  laravel-db:
+  laravel-sync:
+  laravel-elastic:
+    driver: local
