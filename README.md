@@ -2,22 +2,23 @@
 * Laravel: 9+
 * SQL database
 * VueJS: 2 or 3
-* Usage of component libraries / CSS frameworks is optional • Styling: SCSS
-* Usage of design patterns (i.e. BEM, Atomic Design) is optional
+  * Usage of component libraries / CSS frameworks is optional
+* Styling: SCSS
+  * Usage of design patterns (i.e. BEM, Atomic Design) is optional
 ## Workflow requirements:
 * Repository: Please set up a GitHub repository (public or private)
 * Commits: Please commit often, at least daily
 * Create a new Laravel project
 ## Data points:
 1. Product:
-* ID (integer)
-* name (string)
-* number (integer)
-* created at (timestamp) o updated at (timestamp)
+   * ID (integer)
+   * name (string)
+   * number (integer)
+   * created at (timestamp) o updated at (timestamp)
 2. Pack:
-* ID (integer)
-* name (string)
-* created at (timestamp) o updated at (timestamp)
+   * ID (integer)
+   * name (string)
+   * created at (timestamp) o updated at (timestamp)
 
 A pack is a group of products and must consist of at least two products. Products may exist without being included in any packs.
 ## Features:
