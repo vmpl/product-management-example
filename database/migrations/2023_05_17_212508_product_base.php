@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_base', function (Blueprint $table) {
             $table->unsignedBigInteger('id')
-                ->primary();
+                ->autoIncrement();
             $table->string('name', 255)
                 ->nullable(false);
             $table->integer('number')

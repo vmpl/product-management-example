@@ -15,10 +15,8 @@ use App\Attributes\Form;
 #[Grid\Column('number', 'Number')]
 #[Grid\Column('created_at', 'Created')]
 #[Grid\Column('updated_at', 'Updated')]
-#[Form]
-#[Form\Field('id', Form\Field\Type::Hidden)]
-#[Form\Field('name')]
-#[Form\Field('number', Form\Field\Type::Number)]
+#[Form\Field('name', 'Name')]
+#[Form\Field('number', 'Number')]
 class Product extends Model
 {
     use HasFactory;
@@ -34,4 +32,6 @@ class Product extends Model
     {
         return $this->belongsTo(Team::class);
     }
+
+    protected $fillable = ['name', 'number'];
 }

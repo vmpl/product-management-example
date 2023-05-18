@@ -1,21 +1,23 @@
 <template>
-    <CrudLayout title="Crud" :list="grids">
+    <CrudLayout title="Crud | Grid" :list="grids">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Crud
+                Crud | Grid
             </h2>
         </template>
     </CrudLayout>
 </template>
 <script>
-import AppLayout from '@/Layouts/AppLayout.vue';
 import CrudLayout from "../../Layouts/CrudLayout.vue";
 
 export default {
-    components: {CrudLayout, AppLayout},
     props: {
-        title: String,
         grids: Array,
+        size: Number,
+        columns: Array,
     },
+    components: {
+        CrudLayout
+    }
 }
 </script>

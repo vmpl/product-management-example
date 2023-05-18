@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('product_pack', function (Blueprint $table) {
             $table->unsignedBigInteger('id')
-                ->primary();
+                ->autoIncrement();
             $table->string('name', 255)
                 ->nullable(false);
             $table->dateTimeTz('created_at')

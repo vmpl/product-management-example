@@ -2,8 +2,8 @@
 
 namespace App\Attributes\Grid;
 
-#[\Attribute(\Attribute::TARGET_CLASS)]
-class Column
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
+class Column implements \App\Attributes\PropAttribute
 {
     public function __construct(
         protected readonly string $name,
@@ -13,7 +13,7 @@ class Column
     ) {
     }
 
-    public function toComponent(): array
+    public function toProp(): array
     {
         return [
             'name' => $this->name,

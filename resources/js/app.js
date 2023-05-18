@@ -1,4 +1,5 @@
 import './bootstrap';
+import '@quasar/extras/material-icons/material-icons.css'
 import '../css/quasar.sass';
 import '../css/app.css';
 

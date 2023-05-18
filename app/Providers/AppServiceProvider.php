@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -90,7 +92,7 @@ class AppServiceProvider extends ServiceProvider
                 $columnAttributes = $reflectionClass->getAttributes(Grid\Column::class);
                 $columnAttributes = array_map(function ($columnAttribute) {
                     if ($columnAttribute instanceof Grid\Column) {
-                        return $columnAttribute->toComponent();
+                        return $columnAttribute->toProp();
                     }
 
                     return null;
@@ -98,12 +100,69 @@ class AppServiceProvider extends ServiceProvider
                 $columnAttributes = array_filter($columnAttributes);
 
                 return Inertia::render('Crud/Grid', [
+                    'grids' => array_keys($this->grid),
                     'size' => $paginatorAttribute->getSize(),
                     'columns' => $columnAttributes,
                 ]);
             })
                 ->where('grid', '[\w]+')
                 ->name('crud.grid');
+
+
+            Route::get('/crud/{grid}/form/{id?}', function (string $grid, ?int $id = null) {
+                if (!array_key_exists($grid, $this->grid)) {
+                    throw new \Exception('not found'); // @todo
+                }
+
+                $reflectionClass = new \ReflectionClass($this->grid[$grid]);
+                $fieldAttributes = $reflectionClass->getAttributes(Form\Field::class);
+                if (empty($fieldAttributes)) {
+                    throw new \Exception('not found'); // @todo
+                }
+                $fields = array_map(
+                    fn ($fieldAttribute) => $fieldAttribute->newInstance()->toProp(),
+                    $fieldAttributes,
+                );
+
+                return Inertia::render('Crud/Form', [
+                    'grids' => array_keys($this->grid),
+                    'postUrl' => \route('crud.grid.form.post', ['grid' => $grid, 'id' => $id]),
+                    'fields' => $fields,
+                ]);
+            })
+                ->name('crud.grid.form')
+                ->where('grid', '\w+')
+                ->where('id', '\d+');
+
+            Route::post('/crud/{grid}/form/{id?}', function (Request $request, string $grid, ?int $id = null) {
+                if (!array_key_exists($grid, $this->grid)) {
+                    throw new \Exception('not found'); // @todo
+                }
+
+                $reflectionClass = new \ReflectionClass($this->grid[$grid]);
+                $fieldAttributes = $reflectionClass->getAttributes(Form\Field::class);
+                if (empty($fieldAttributes)) {
+                    throw new \Exception('not found'); // @todo
+                }
+                $fields = array_map(
+                    fn ($fieldAttribute) => $fieldAttribute->newInstance()->getName(),
+                    $fieldAttributes,
+                );
+                $fields = array_map(
+                    fn ($fieldName) => ['key' => $fieldName, 'value' => $request->input($fieldName)],
+                    $fields,
+                );
+                $fields = array_column($fields, 'value', 'key');
+                $model = $this->grid[$grid]::findOr($id, fn() => new $this->grid[$grid]);
+                $model->fill($fields);
+                $model->team_id = $request->user()->currentTeam->id;
+                $model->save();
+
+                return redirect()->route('crud.grid', ['grid' => $grid]);
+            })
+                ->name('crud.grid.form.post')
+                ->where('grid', '\w+')
+                ->where('id', '\d+');
         });
     }
 }
