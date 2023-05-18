@@ -1,5 +1,5 @@
 <template>
-    <CrudLayout title="Crud | Grid" :list="grids">
+    <CrudLayout title="Crud | Grid" :list="models">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Crud | Grid
@@ -12,7 +12,7 @@ import CrudLayout from "../../Layouts/CrudLayout.vue";
 
 export default {
     props: {
-        grids: Array,
+        models: Array,
         size: Number,
         columns: Array,
     },

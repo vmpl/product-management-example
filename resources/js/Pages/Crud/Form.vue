@@ -1,5 +1,5 @@
 <template>
-    <CrudLayout title="Form | Crud" :list="grids">
+    <CrudLayout title="Form | Crud" :list="models">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Form | Crud
@@ -27,7 +27,7 @@ import {QInput} from "quasar";
 
 export default {
     props: {
-        grids: Array,
+        models: Array,
         fields: Array,
         postUrl: String,
     },
