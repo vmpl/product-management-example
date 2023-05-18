@@ -187,4 +187,7 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'eloquent_crud' => [
+        \App\Models\Product::class,
+    ]
 ];
