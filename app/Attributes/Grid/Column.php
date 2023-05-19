@@ -23,4 +23,20 @@ class Column implements \App\Attributes\PropAttribute
             'searchable' => $this->searchable,
         ];
     }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSearchable(): bool
+    {
+        return $this->searchable;
+    }
 }

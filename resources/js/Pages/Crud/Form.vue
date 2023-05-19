@@ -16,7 +16,7 @@
                                ...field.component.props
                            }"/>
             </template>
-            <q-btn label="Submit" type="submit" color="primary"/>
+            <q-btn label="Submit" type="submit" color="teal-10"/>
         </q-form>
     </CrudLayout>
 </template>

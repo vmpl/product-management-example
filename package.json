@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "vite build --mode development --watch",
         "build": "vite build && vite build --ssr"
     },
     "devDependencies": {
@@ -13,7 +13,7 @@
         "@vitejs/plugin-vue": "^4.0.0",
         "@vue/server-renderer": "^3.2.31",
         "autoprefixer": "^10.4.7",
-        "axios": "^1.1.2",
+        "axios": "^1.4.0",
         "laravel-vite-plugin": "^0.7.5",
         "postcss": "^8.4.14",
         "sass": "^1.62.1",

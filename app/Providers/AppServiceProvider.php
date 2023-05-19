@@ -67,8 +67,9 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 return Inertia::render('Crud/Grid', [
-                    'fetchUrl' => route('crud.grid.fetch', ['grid' => $grid]),
-                    'formUrl' => \route('crud.grid.form', ['grid' => $grid, 'id' => ':id']),
+                    'urlFetch' => route('crud.grid.fetch', ['grid' => $grid]),
+                    'urlForm' => \route('crud.grid.form', ['grid' => $grid, 'id' => ':id']),
+                    'urlDelete' => \route('crud.grid.delete', ['grid' => $grid, 'id' => ':id']),
                     ...$gridProps,
                 ]);
             })
@@ -81,6 +82,7 @@ class AppServiceProvider extends ServiceProvider
                 string                $grid,
             ) {
                 $className = $attributesService->getClassName($grid);
+                $columns = $attributesService->getColumns($grid) ?? [];
                 if (empty($className)) {
                     throw new \Exception('not found'); // @todo
                 }
@@ -96,6 +98,16 @@ class AppServiceProvider extends ServiceProvider
                     ? $select->offset($page * $rowsPerPage)->limit($rowsPerPage)
                     : $select;
 
+                $filter = $request->input('filter');
+                $filter = json_decode($filter, true);
+                $filter = array_filter($filter, function ($terms, $name) use ($columns) {
+                    return @$columns[$name]?->isSearchable() && !empty($terms);
+                }, ARRAY_FILTER_USE_BOTH);
+                foreach ($filter as $field => $term) {
+                    $term = trim($term);
+                    $select->where($field, 'like', "%{$term}%");
+                }
+
                 $data = [
                     'rowsNumber' => $select->count(),
                     'items' => $items->get()->toArray(),
@@ -104,6 +116,23 @@ class AppServiceProvider extends ServiceProvider
             })
                 ->where('grid', '\w+')
                 ->name('crud.grid.fetch');
+
+            Route::delete('/crud/{grid}/delete/{id}', function (
+                CrudAttributesService $attributesService,
+                string $grid,
+                int $id,
+            ) {
+                $className = $attributesService->getClassName($grid);
+                if (empty($className)) {
+                    throw new \Exception('not found'); // @todo
+                }
+
+                $className::destroy($id);
+                return response()->json();
+            })
+                ->where('grid', '\w+')
+                ->where('id', '\d+')
+                ->name('crud.grid.delete');
 
 
             Route::get('/crud/{grid}/form/{id?}', function (
@@ -134,11 +163,12 @@ class AppServiceProvider extends ServiceProvider
                 ?int                  $id = null,
             ) {
                 $className = $attributesService->getClassName($grid);
-                $fields = $attributesService->getFieldNames($grid);
+                $fields = $attributesService->getFields($grid);
                 if (empty($className) || empty($fields)) {
                     throw new \Exception('not found'); // @todo
                 }
 
+                $fields = array_map(fn($field) => $field->getName(), $fields);
                 $fields = array_map(
                     fn($fieldName) => ['key' => $fieldName, 'value' => $request->input($fieldName)],
                     $fields,
