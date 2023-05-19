@@ -30,13 +30,14 @@ export default {
         models: Array,
         fields: Array,
         postUrl: String,
+        current: Array
     },
     components: {
         CrudLayout,
         QInput,
     },
     data() {
-        const form = Object.fromEntries(this.fields.map(it => [it.name, undefined]));
+        const form = Object.fromEntries(this.fields.map(it => [it.name, this.current[it.name]]));
         return {
             form,
         }

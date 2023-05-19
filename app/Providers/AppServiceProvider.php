@@ -66,10 +66,44 @@ class AppServiceProvider extends ServiceProvider
                     throw new \Exception('not found'); // @todo
                 }
 
-                return Inertia::render('Crud/Grid', $gridProps);
+                return Inertia::render('Crud/Grid', [
+                    'fetchUrl' => route('crud.grid.fetch', ['grid' => $grid]),
+                    'formUrl' => \route('crud.grid.form', ['grid' => $grid, 'id' => ':id']),
+                    ...$gridProps,
+                ]);
             })
                 ->where('grid', '[\w]+')
                 ->name('crud.grid');
+
+            Route::get('/crud/{grid}/fetch', function (
+                CrudAttributesService $attributesService,
+                Request               $request,
+                string                $grid,
+            ) {
+                $className = $attributesService->getClassName($grid);
+                if (empty($className)) {
+                    throw new \Exception('not found'); // @todo
+                }
+
+                $page = ((int)$request->input('page') - 1);
+                $rowsPerPage = ((int)$request->input('rowsPerPage'));
+                $sortBy = $request->input('sortBy');
+                $descending = $request->input('descending');
+
+                /** @var \Illuminate\Database\Eloquent\Builder $select */
+                $select = $className::orderBy($sortBy, $descending ? 'desc' : 'asc');
+                $items = $rowsPerPage
+                    ? $select->offset($page * $rowsPerPage)->limit($rowsPerPage)
+                    : $select;
+
+                $data = [
+                    'rowsNumber' => $select->count(),
+                    'items' => $items->get()->toArray(),
+                ];
+                return response()->json($data);
+            })
+                ->where('grid', '\w+')
+                ->name('crud.grid.fetch');
 
 
             Route::get('/crud/{grid}/form/{id?}', function (
@@ -78,12 +112,14 @@ class AppServiceProvider extends ServiceProvider
                 ?int                  $id = null,
             ) {
                 $formProps = $attributesService->getFormProps($grid);
-                if (!$formProps) {
+                $className = $attributesService->getClassName($grid);
+                if (!$formProps || !$className) {
                     throw new \Exception('not found'); // @todo
                 }
 
                 return Inertia::render('Crud/Form', [
                     'postUrl' => \route('crud.grid.form.post', ['grid' => $grid, 'id' => $id]),
+                    'current' => $className::find($id)?->toArray() ?? [],
                     ...$formProps,
                 ]);
             })
@@ -97,13 +133,18 @@ class AppServiceProvider extends ServiceProvider
                 string                $grid,
                 ?int                  $id = null,
             ) {
+                $className = $attributesService->getClassName($grid);
                 $fields = $attributesService->getFieldNames($grid);
+                if (empty($className) || empty($fields)) {
+                    throw new \Exception('not found'); // @todo
+                }
+
                 $fields = array_map(
                     fn($fieldName) => ['key' => $fieldName, 'value' => $request->input($fieldName)],
                     $fields,
                 );
                 $fields = array_column($fields, 'value', 'key');
-                $model = $this->grid[$grid]::findOr($id, fn() => new $this->grid[$grid]);
+                $model = $className::findOr($id, fn() => new $className());
                 $model->fill($fields);
                 $model->team_id = $request->user()->currentTeam->id;
                 $model->save();

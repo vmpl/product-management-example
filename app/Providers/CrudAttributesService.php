@@ -31,13 +31,14 @@ class CrudAttributesService
                 $fieldAttributes = array_map(fn ($attribute) => $attribute->newInstance(), $fieldAttributes);
 
                 $modelName = $paginatorAttribute->getPath() ?? $reflectionClass->getShortName();
-                $models->$modelName = new class($paginatorAttribute, $columnAttributes, $fieldAttributes) {
+                $models->$modelName = new class($class, $paginatorAttribute, $columnAttributes, $fieldAttributes) {
                     /**
                      * @param Grid\Paginator $paginator
                      * @param Form\Column[] $columns
                      * @param Form\Field[] $fields
                      */
                     public function __construct(
+                        public readonly string         $className,
                         public readonly Grid\Paginator $paginator,
                         public readonly array          $columns,
                         public readonly array          $fields,
@@ -95,5 +96,15 @@ class CrudAttributesService
         }
 
         return array_map(fn ($field) => $field->getName(), $model->fields);
+    }
+
+    public function getClassName(string $grid): ?string
+    {
+        $model = $this->models->$grid;
+        if (!$model) {
+            return null;
+        }
+
+        return $model->className;
     }
 }

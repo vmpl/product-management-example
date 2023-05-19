@@ -17,9 +17,10 @@ class Column implements \App\Attributes\PropAttribute
     {
         return [
             'name' => $this->name,
+            'field' => $this->name,
             'label' => (string)__($this->label),
-            'searchable' => $this->searchable,
             'sortable' => $this->sortable,
+            'searchable' => $this->searchable,
         ];
     }
 }
