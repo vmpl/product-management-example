@@ -82,6 +82,7 @@ class AppServiceProvider extends ServiceProvider
                 string                $grid,
             ) {
                 $className = $attributesService->getClassName($grid);
+                $columns = $attributesService->getColumns($grid) ?? [];
                 if (empty($className)) {
                     throw new \Exception('not found'); // @todo
                 }
@@ -96,6 +97,16 @@ class AppServiceProvider extends ServiceProvider
                 $items = $rowsPerPage
                     ? $select->offset($page * $rowsPerPage)->limit($rowsPerPage)
                     : $select;
+
+                $filter = $request->input('filter');
+                $filter = json_decode($filter, true);
+                $filter = array_filter($filter, function ($terms, $name) use ($columns) {
+                    return @$columns[$name]?->isSearchable() && !empty($terms);
+                }, ARRAY_FILTER_USE_BOTH);
+                foreach ($filter as $field => $term) {
+                    $term = trim($term);
+                    $select->where($field, 'like', "%{$term}%");
+                }
 
                 $data = [
                     'rowsNumber' => $select->count(),
@@ -152,11 +163,12 @@ class AppServiceProvider extends ServiceProvider
                 ?int                  $id = null,
             ) {
                 $className = $attributesService->getClassName($grid);
-                $fields = $attributesService->getFieldNames($grid);
+                $fields = $attributesService->getFields($grid);
                 if (empty($className) || empty($fields)) {
                     throw new \Exception('not found'); // @todo
                 }
 
+                $fields = array_map(fn($field) => $field->getName(), $fields);
                 $fields = array_map(
                     fn($fieldName) => ['key' => $fieldName, 'value' => $request->input($fieldName)],
                     $fields,

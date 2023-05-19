@@ -34,7 +34,7 @@ class CrudAttributesService
                 $models->$modelName = new class($class, $paginatorAttribute, $columnAttributes, $fieldAttributes) {
                     /**
                      * @param Grid\Paginator $paginator
-                     * @param Form\Column[] $columns
+                     * @param Grid\Column[] $columns
                      * @param Form\Field[] $fields
                      */
                     public function __construct(
@@ -88,14 +88,40 @@ class CrudAttributesService
         ];
     }
 
-    public function getFieldNames(string $grid): ?array
+    /**
+     * @param string $grid
+     * @return array<string, Form\Field>|null
+     */
+    public function getFields(string $grid): ?array
     {
         $model = $this->models->$grid;
         if (!$model) {
             return null;
         }
 
-        return array_map(fn ($field) => $field->getName(), $model->fields);
+        /** @var Form\Field[] $fields */
+        $fields = $model->fields;
+        return array_column(
+            array_map(fn($field) => [$field->getName(), $field], $fields),
+            1,
+            0
+        );
+    }
+
+    public function getColumns(string $grid): ?array
+    {
+        $model = $this->models->$grid;
+        if (!$model) {
+            return null;
+        }
+
+        /** @var Grid\Column[] $fields */
+        $fields = $model->columns;
+        return array_column(
+            array_map(fn($field) => [$field->getName(), $field], $fields),
+            1,
+            0
+        );
     }
 
     public function getClassName(string $grid): ?string

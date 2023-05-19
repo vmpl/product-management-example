@@ -13,7 +13,6 @@
                 :rows="gridRows"
                 :loading="loading"
                 :pagination="pagination"
-                :filter="filter"
                 row-key="id"
                 separator="vertical"
                 @request="onRequest"
@@ -25,7 +24,24 @@
                             :key="col.name"
                             :props="props"
                         >
-                            {{ col.label }}
+                            <strong>{{ col.label }}</strong>
+                            <q-btn
+                                v-if="filter.hasOwnProperty(col.field)"
+                                :icon="filter[col.field] ? 'filter_alt' : 'search'"
+                                flat
+                                round
+                                @click.prevent.stop
+                            >
+                                <q-popup-edit v-model="filter[col.field]" auto-save v-slot="scope">
+                                    <q-input
+                                        v-model="scope.value"
+                                        dense
+                                        autofocus
+                                        clearable
+                                        @keyup.enter="scope.set"
+                                    />
+                                </q-popup-edit>
+                            </q-btn>
                         </q-th>
                     </q-tr>
                 </template>
@@ -72,23 +88,31 @@ export default {
         return {
             gridColumns,
             gridRows: [],
-            filter: '',
+            filter: Object.fromEntries(this.columns.map(it => {
+                if (!it.searchable) {
+                    return null;
+                }
+
+                return [it.field, '']
+            }).filter(it => it !== null )),
             loading: false,
             pagination: {
                 sortBy: 'id',
-            }
+            },
+            watchers: [],
         }
     },
     methods: {
         onRequest({pagination}) {
-            const url = new URL(this.urlFetch);
-            url.searchParams.append('page', pagination.page);
-            url.searchParams.append('rowsPerPage', pagination.rowsPerPage);
-            url.searchParams.append('sortBy', pagination.sortBy);
-            url.searchParams.append('descending', pagination.descending);
+            const urlRequest = new URL(this.urlFetch);
+            urlRequest.searchParams.append('page', pagination.page);
+            urlRequest.searchParams.append('rowsPerPage', pagination.rowsPerPage);
+            urlRequest.searchParams.append('sortBy', pagination.sortBy);
+            urlRequest.searchParams.append('descending', pagination.descending);
+            urlRequest.searchParams.append('filter', JSON.stringify(this.filter));
 
             this.loading = true;
-            axios.get(url.toString())
+            axios.get(urlRequest.toString())
                 .then(({data}) => {
                     const {items, rowsNumber} = data;
 
@@ -134,8 +158,17 @@ export default {
             });
         }
     },
+    created() {
+    },
     mounted() {
-      this.$refs.tableElement.requestServerInteraction();
+        this.$refs.tableElement.requestServerInteraction();
+        Object.keys(this.filter).forEach(name => {
+            this.watchers.push(this.$watch(`filter.${name}`,
+                () => this.$refs.tableElement.requestServerInteraction()));
+        });
+    },
+    unmounted() {
+        this.watchers.forEach(it => it());
     }
 }
 </script>
