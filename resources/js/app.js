@@ -8,7 +8,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 
-import { Quasar } from 'quasar';
+import {Dialog, Quasar} from 'quasar';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -20,7 +20,9 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(Quasar, {
-                plugins: {},
+                plugins: {
+                    Dialog,
+                },
                 config: {
 
                 }

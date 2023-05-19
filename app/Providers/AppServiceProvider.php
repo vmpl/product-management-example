@@ -67,8 +67,9 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 return Inertia::render('Crud/Grid', [
-                    'fetchUrl' => route('crud.grid.fetch', ['grid' => $grid]),
-                    'formUrl' => \route('crud.grid.form', ['grid' => $grid, 'id' => ':id']),
+                    'urlFetch' => route('crud.grid.fetch', ['grid' => $grid]),
+                    'urlForm' => \route('crud.grid.form', ['grid' => $grid, 'id' => ':id']),
+                    'urlDelete' => \route('crud.grid.delete', ['grid' => $grid, 'id' => ':id']),
                     ...$gridProps,
                 ]);
             })
@@ -104,6 +105,23 @@ class AppServiceProvider extends ServiceProvider
             })
                 ->where('grid', '\w+')
                 ->name('crud.grid.fetch');
+
+            Route::delete('/crud/{grid}/delete/{id}', function (
+                CrudAttributesService $attributesService,
+                string $grid,
+                int $id,
+            ) {
+                $className = $attributesService->getClassName($grid);
+                if (empty($className)) {
+                    throw new \Exception('not found'); // @todo
+                }
+
+                $className::destroy($id);
+                return response()->json();
+            })
+                ->where('grid', '\w+')
+                ->where('id', '\d+')
+                ->name('crud.grid.delete');
 
 
             Route::get('/crud/{grid}/form/{id?}', function (
