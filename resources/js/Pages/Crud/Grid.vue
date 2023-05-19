@@ -98,6 +98,7 @@ export default {
             loading: false,
             pagination: {
                 sortBy: 'id',
+                rowsPerPage: this.size,
             },
             watchers: [],
         }
