@@ -2,14 +2,12 @@
 
 namespace App\Providers;
 
-use App\Models\Product;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 use Laravel\Jetstream\Jetstream;
-use App\Attributes\Grid;
-use App\Attributes\Form;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,7 +18,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(CrudAttributesService::class, function (Application $app) {
+            return CrudAttributesService::init(
+                $app['config']->get('app.eloquent_crud') ?? []
+            );
+        });
     }
 
     /**
@@ -38,25 +40,8 @@ class AppServiceProvider extends ServiceProvider
 
     final protected function eloquentCrudModels()
     {
-        $eloquentCrudModels = config('app.eloquent_crud', []);
-        foreach ($eloquentCrudModels as $eloquentCrudModel) {
-            $reflectionClass = new \ReflectionClass($eloquentCrudModel);
-
-            $paginatorAttribute = $reflectionClass->getAttributes(Grid\Paginator::class);
-            $paginatorAttribute = array_shift($paginatorAttribute)?->newInstance();
-            if (!$paginatorAttribute instanceof Grid\Paginator) {
-                continue;
-            }
-
-            $this->grid[$paginatorAttribute->getPath() ?? $reflectionClass->getShortName()] = $eloquentCrudModel;
-        }
-
-        if (empty($this->grid)) {
-            return;
-        }
-
         $authMiddleware = config('jetstream.guard')
-            ? 'auth:'.config('jetstream.guard')
+            ? 'auth:' . config('jetstream.guard')
             : 'auth';
 
         $authSessionMiddleware = config('jetstream.auth_session', false)
@@ -70,90 +55,96 @@ class AppServiceProvider extends ServiceProvider
             'verified',
         ]))->group(function () {
 
-            Route::get('/crud', function () {
-                return Inertia::render('Crud/List', [
-                    'grids' => array_keys($this->grid)
-                ]);
+            Route::get('/crud', function (CrudAttributesService $attributesService) {
+                $listProps = $attributesService->getListProps();
+                return Inertia::render('Crud/List', $listProps);
             })->name('crud');
 
-            Route::get('/crud/{grid}', function (string $grid) {
-                if (!array_key_exists($grid, $this->grid)) {
+            Route::get('/crud/{grid}', function (CrudAttributesService $attributesService, string $grid) {
+                $gridProps = $attributesService->getGridProps($grid);
+                if (!$gridProps) {
                     throw new \Exception('not found'); // @todo
                 }
 
-                $reflectionClass = new \ReflectionClass($this->grid[$grid]);
-                $paginatorAttribute = $reflectionClass->getAttributes(Grid\Paginator::class);
-                $paginatorAttribute = array_shift($paginatorAttribute)?->newInstance();
-
-                if (!$paginatorAttribute instanceof Grid\Paginator) {
-                    throw new \Exception('no paginator'); // @todo
-                }
-
-                $columnAttributes = $reflectionClass->getAttributes(Grid\Column::class);
-                $columnAttributes = array_map(function ($columnAttribute) {
-                    if ($columnAttribute instanceof Grid\Column) {
-                        return $columnAttribute->toProp();
-                    }
-
-                    return null;
-                }, $columnAttributes);
-                $columnAttributes = array_filter($columnAttributes);
-
                 return Inertia::render('Crud/Grid', [
-                    'grids' => array_keys($this->grid),
-                    'size' => $paginatorAttribute->getSize(),
-                    'columns' => $columnAttributes,
+                    'fetchUrl' => route('crud.grid.fetch', ['grid' => $grid]),
+                    'formUrl' => \route('crud.grid.form', ['grid' => $grid, 'id' => ':id']),
+                    ...$gridProps,
                 ]);
             })
                 ->where('grid', '[\w]+')
                 ->name('crud.grid');
 
-
-            Route::get('/crud/{grid}/form/{id?}', function (string $grid, ?int $id = null) {
-                if (!array_key_exists($grid, $this->grid)) {
+            Route::get('/crud/{grid}/fetch', function (
+                CrudAttributesService $attributesService,
+                Request               $request,
+                string                $grid,
+            ) {
+                $className = $attributesService->getClassName($grid);
+                if (empty($className)) {
                     throw new \Exception('not found'); // @todo
                 }
 
-                $reflectionClass = new \ReflectionClass($this->grid[$grid]);
-                $fieldAttributes = $reflectionClass->getAttributes(Form\Field::class);
-                if (empty($fieldAttributes)) {
+                $page = ((int)$request->input('page') - 1);
+                $rowsPerPage = ((int)$request->input('rowsPerPage'));
+                $sortBy = $request->input('sortBy');
+                $descending = $request->input('descending');
+
+                /** @var \Illuminate\Database\Eloquent\Builder $select */
+                $select = $className::orderBy($sortBy, $descending ? 'desc' : 'asc');
+                $items = $rowsPerPage
+                    ? $select->offset($page * $rowsPerPage)->limit($rowsPerPage)
+                    : $select;
+
+                $data = [
+                    'rowsNumber' => $select->count(),
+                    'items' => $items->get()->toArray(),
+                ];
+                return response()->json($data);
+            })
+                ->where('grid', '\w+')
+                ->name('crud.grid.fetch');
+
+
+            Route::get('/crud/{grid}/form/{id?}', function (
+                CrudAttributesService $attributesService,
+                string                $grid,
+                ?int                  $id = null,
+            ) {
+                $formProps = $attributesService->getFormProps($grid);
+                $className = $attributesService->getClassName($grid);
+                if (!$formProps || !$className) {
                     throw new \Exception('not found'); // @todo
                 }
-                $fields = array_map(
-                    fn ($fieldAttribute) => $fieldAttribute->newInstance()->toProp(),
-                    $fieldAttributes,
-                );
 
                 return Inertia::render('Crud/Form', [
-                    'grids' => array_keys($this->grid),
                     'postUrl' => \route('crud.grid.form.post', ['grid' => $grid, 'id' => $id]),
-                    'fields' => $fields,
+                    'current' => $className::find($id)?->toArray() ?? [],
+                    ...$formProps,
                 ]);
             })
                 ->name('crud.grid.form')
                 ->where('grid', '\w+')
                 ->where('id', '\d+');
 
-            Route::post('/crud/{grid}/form/{id?}', function (Request $request, string $grid, ?int $id = null) {
-                if (!array_key_exists($grid, $this->grid)) {
+            Route::post('/crud/{grid}/form/{id?}', function (
+                CrudAttributesService $attributesService,
+                Request               $request,
+                string                $grid,
+                ?int                  $id = null,
+            ) {
+                $className = $attributesService->getClassName($grid);
+                $fields = $attributesService->getFieldNames($grid);
+                if (empty($className) || empty($fields)) {
                     throw new \Exception('not found'); // @todo
                 }
 
-                $reflectionClass = new \ReflectionClass($this->grid[$grid]);
-                $fieldAttributes = $reflectionClass->getAttributes(Form\Field::class);
-                if (empty($fieldAttributes)) {
-                    throw new \Exception('not found'); // @todo
-                }
                 $fields = array_map(
-                    fn ($fieldAttribute) => $fieldAttribute->newInstance()->getName(),
-                    $fieldAttributes,
-                );
-                $fields = array_map(
-                    fn ($fieldName) => ['key' => $fieldName, 'value' => $request->input($fieldName)],
+                    fn($fieldName) => ['key' => $fieldName, 'value' => $request->input($fieldName)],
                     $fields,
                 );
                 $fields = array_column($fields, 'value', 'key');
-                $model = $this->grid[$grid]::findOr($id, fn() => new $this->grid[$grid]);
+                $model = $className::findOr($id, fn() => new $className());
                 $model->fill($fields);
                 $model->team_id = $request->user()->currentTeam->id;
                 $model->save();
