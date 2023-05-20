@@ -95,7 +95,7 @@ class Crud extends Controller
         return response()->json();
     }
 
-    public function form(string $grid, ?int $id)
+    public function form(string $grid, ?int $id = null)
     {
         $formProps = $this->attributesService->getFormProps($grid);
         $className = $this->attributesService->getClassName($grid);

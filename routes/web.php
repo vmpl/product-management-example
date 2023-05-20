@@ -42,14 +42,14 @@ Route::delete('/crud/{grid}/delete/{id}', [Crud::class, 'deleteRecord'])
     ->name('crud.grid.delete');
 
 Route::get('/crud/{grid}/form/{id?}', [Crud::class, 'form'])
-    ->name('crud.grid.form')
     ->where('grid', '\w+')
-    ->where('id', '\d+');
+    ->where('id', '\d+')
+    ->name('crud.grid.form');
 
 Route::post('/crud/{grid}/form/{id?}', [Crud::class, 'save'])
-    ->name('crud.grid.form.post')
     ->where('grid', '\w+')
-    ->where('id', '\d+');
+    ->where('id', '\d+')
+    ->name('crud.grid.form.post');
 
 Route::middleware([
     'auth:sanctum',
