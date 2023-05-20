@@ -16,6 +16,7 @@ use App\Attributes\Form;
 #[Grid\Column('created_at', 'Created')]
 #[Grid\Column('updated_at', 'Updated')]
 #[Form\Field('name', 'Name')]
+#[Form\Field('products', 'Products', Form\Field\Component::Children)]
 class Pack extends Model
 {
     use HasFactory;
@@ -36,6 +37,6 @@ class Pack extends Model
 
     public function products(): HasManyThrough
     {
-        return $this->hasManyThrough(PackProduct::class, Product::class);
+        return $this->hasManyThrough(Product::class, PackProduct::class);
     }
 }

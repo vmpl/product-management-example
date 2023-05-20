@@ -2,6 +2,8 @@
 
 namespace App\Attributes\Grid;
 
+use App\Providers\CrudAttributesService;
+
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
 class Column implements \App\Attributes\PropAttribute
 {
@@ -13,7 +15,7 @@ class Column implements \App\Attributes\PropAttribute
     ) {
     }
 
-    public function toProp(): array
+    public function toProp(CrudAttributesService $attributesService): array
     {
         return [
             'name' => $this->name,

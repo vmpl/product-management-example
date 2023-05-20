@@ -2,11 +2,14 @@
 
 namespace App\Attributes\Form\Field;
 
+use App\Providers\CrudAttributesService;
+
 enum Component
 {
     case Input;
+    case Children;
 
-    public function getConfig(): \App\Attributes\PropAttribute
+    public function getConfig(\App\Attributes\Form\Field $field): \App\Attributes\PropAttribute
     {
         $config = new class implements \App\Attributes\PropAttribute {
             public function __construct(
@@ -22,8 +25,23 @@ enum Component
                 return new self('q-input', $props);
             }
 
-            public function toProp(): array
+            public static function children(string $name): self
             {
+                $props = new \stdClass();
+                $props->urlFetch = $name;
+                return new self('select-children', $props);
+            }
+
+            public function toProp(CrudAttributesService $attributesService): array
+            {
+                $className = $attributesService->getClassName();
+                $urlFetch = $this->props->urlFetch;
+                $results = $className::$urlFetch();
+
+                $gridProps = $attributesService->getGridProps();
+                $this->props->size = $gridProps['size'];
+                $this->props->columns = $gridProps['columns'];
+
                 return [
                     'type' => $this->type,
                     'props' => $this->props,
@@ -32,7 +50,10 @@ enum Component
         };
 
         return match ($this) {
-            static::Input => $config::input()
+            self::Input => $config::input(),
+            self::Children => (function () use ($config, $field) {
+                return call_user_func([$config, 'children'], $field->getName());
+            })(),
         };
     }
 }

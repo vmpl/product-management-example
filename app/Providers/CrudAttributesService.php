@@ -10,10 +10,11 @@ class CrudAttributesService
 {
     protected function __construct(
         protected readonly \stdClass $models,
+        public readonly string $grid,
     ) {
     }
 
-    public static function init(array $classes): self
+    public static function init(array $classes, string $grid): self
     {
         $models = Cache::get(md5(static::class), function () use ($classes) {
             $models = new \stdClass();
@@ -31,17 +32,17 @@ class CrudAttributesService
                 $fieldAttributes = array_map(fn ($attribute) => $attribute->newInstance(), $fieldAttributes);
 
                 $modelName = $paginatorAttribute->getPath() ?? $reflectionClass->getShortName();
-                $models->$modelName = new class($class, $paginatorAttribute, $columnAttributes, $fieldAttributes) {
+                $models->$modelName = new class($reflectionClass, $paginatorAttribute, $columnAttributes, $fieldAttributes) {
                     /**
                      * @param Grid\Paginator $paginator
                      * @param Grid\Column[] $columns
                      * @param Form\Field[] $fields
                      */
                     public function __construct(
-                        public readonly string         $className,
-                        public readonly Grid\Paginator $paginator,
-                        public readonly array          $columns,
-                        public readonly array          $fields,
+                        public readonly \ReflectionClass $reflectionClass,
+                        public readonly Grid\Paginator   $paginator,
+                        public readonly array            $columns,
+                        public readonly array            $fields,
                     ) {
                     }
                 };
@@ -50,7 +51,7 @@ class CrudAttributesService
             return $models;
         });
 
-        return new static($models);
+        return new static($models, $grid);
     }
 
     public function getListProps(): array
@@ -61,8 +62,9 @@ class CrudAttributesService
         ];
     }
 
-    public function getGridProps(string $grid): ?array
+    public function getGridProps(): ?array
     {
+        $grid = $this->grid;
         $model = $this->models->$grid;
         if (!$model) {
             return null;
@@ -70,20 +72,21 @@ class CrudAttributesService
 
         return [
             'size' => $model->paginator->getSize(),
-            'columns' => array_map(fn ($column) => $column->toProp(), $model->columns),
+            'columns' => array_map(fn ($column) => $column->toProp($this), $model->columns),
             ...$this->getListProps(),
         ];
     }
 
-    public function getFormProps(string $grid): ?array
+    public function getFormProps(): ?array
     {
+        $grid = $this->grid;
         $model = $this->models->$grid;
         if (!$model) {
             return null;
         }
 
         return [
-            'fields' => array_map(fn ($field) => $field->toProp(), $model->fields),
+            'fields' => array_map(fn ($field) => $field->toProp($this), $model->fields),
             ...$this->getListProps(),
         ];
     }
@@ -92,8 +95,9 @@ class CrudAttributesService
      * @param string $grid
      * @return array<string, Form\Field>|null
      */
-    public function getFields(string $grid): ?array
+    public function getFields(): ?array
     {
+        $grid = $this->grid;
         $model = $this->models->$grid;
         if (!$model) {
             return null;
@@ -108,8 +112,9 @@ class CrudAttributesService
         );
     }
 
-    public function getColumns(string $grid): ?array
+    public function getColumns(): ?array
     {
+        $grid = $this->grid;
         $model = $this->models->$grid;
         if (!$model) {
             return null;
@@ -124,13 +129,15 @@ class CrudAttributesService
         );
     }
 
-    public function getClassName(string $grid): ?string
+    public function getClassName(): ?string
     {
+        $grid = $this->grid;
         $model = $this->models->$grid;
         if (!$model) {
             return null;
         }
-
-        return $model->className;
+        /** @var \ReflectionClass $reflectionClass */
+        $reflectionClass = $model->reflectionClass;
+        return $reflectionClass->getName();
     }
 }
