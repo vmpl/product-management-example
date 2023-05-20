@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Crud;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,6 +24,32 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+Route::get('/crud', [Crud::class, 'list'])
+    ->name('crud');
+
+Route::get('/crud/{grid}', [Crud::class, 'grid'])
+    ->where('grid', '\w+')
+    ->name('crud.grid');
+
+Route::get('/crud/{grid}/fetch', [Crud::class, 'gridFetch'])
+    ->where('grid', '\w+')
+    ->name('crud.grid.fetch');
+
+Route::delete('/crud/{grid}/delete/{id}', [Crud::class, 'deleteRecord'])
+    ->where('grid', '\w+')
+    ->where('id', '\d+')
+    ->name('crud.grid.delete');
+
+Route::get('/crud/{grid}/form/{id?}', [Crud::class, 'form'])
+    ->name('crud.grid.form')
+    ->where('grid', '\w+')
+    ->where('id', '\d+');
+
+Route::post('/crud/{grid}/form/{id?}', [Crud::class, 'save'])
+    ->name('crud.grid.form.post')
+    ->where('grid', '\w+')
+    ->where('id', '\d+');
 
 Route::middleware([
     'auth:sanctum',
