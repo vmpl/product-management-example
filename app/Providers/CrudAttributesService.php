@@ -30,31 +30,11 @@ class CrudAttributesService
                 $properties = $reflectionClass->getProperties();
                 $methods = $reflectionClass->getMethods();
 
-                $columnAttributes = array_map(function ($property) {
-                    $attributes = $property->getAttributes(Grid\Column::class);
-                    /** @var Grid\Column $attribute */
-                    $attribute = array_shift($attributes)?->newInstance();
-                    $attribute?->setReflection($property);
-                    return $attribute;
-                }, $properties);
-                $columnAttributes = array_filter($columnAttributes);
-
-                $fieldAttributes = array_map(function ($property) {
-                    $attributes = $property->getAttributes(Form\Field::class);
-                    /** @var Form\Field $attribute */
-                    $attribute = array_shift($attributes)?->newInstance();
-                    $attribute?->setReflection($property);
-                    return $attribute;
-                }, $properties);
-
-                $fieldAttributes = array_merge(array_map(function ($method) {
-                    $attributes = $method->getAttributes(Form\Field::class);
-                    /** @var Form\Field $attribute */
-                    $attribute = array_shift($attributes)?->newInstance();
-                    $attribute?->setReflection($method);
-                    return $attribute;
-                }, $methods), $fieldAttributes);
-                $fieldAttributes = array_filter($fieldAttributes);
+                $columnAttributes = self::mapReflection($properties, Grid\Column::class);
+                $fieldAttributes = array_merge(
+                    self::mapReflection($properties, Form\Field::class),
+                    self::mapReflection($methods, Form\Field::class),
+                );
 
                 $info = new \stdClass();
                 $info->namespace = $reflectionClass->getName();
@@ -90,6 +70,34 @@ class CrudAttributesService
             array_column($models, null, 'path'),
             array_column($models, null, 'namespace'),
         );
+    }
+
+    private static function mapReflection(array $map, string $attributes)
+    {
+        $mapped = array_map(function ($reflection) use ($attributes) {
+            /** @var \ReflectionAttribute|array $attribute */
+            $attribute = $reflection->getAttributes($attributes);
+            $attribute = array_shift($attribute);
+            if (empty($attribute)) {
+                return null;
+            }
+
+            $arguments = [];
+            $attributeArguments = $attribute->getArguments();
+            $reflectionClass = new \ReflectionClass($attribute->getName());
+            foreach ($reflectionClass->getConstructor()->getParameters() as $reflectionParameter) {
+                $argument = @$attributeArguments[$reflectionParameter->getPosition()]
+                    ?? @$attributeArguments[$reflectionParameter->getName()]
+                    ?? (!$reflectionParameter->isOptional() ?: $reflectionParameter->getDefaultValue());
+                if ($reflectionParameter->getName() === 'reflection') {
+                    $argument = $reflection;
+                }
+
+                $arguments[$reflectionParameter->getPosition()] = $argument;
+            }
+            return $reflectionClass->newInstanceArgs($arguments);
+        }, $map);
+        return array_filter($mapped);
     }
 
     public function getInfoByPath(string $path)

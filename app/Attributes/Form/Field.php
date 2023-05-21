@@ -8,11 +8,14 @@ use App\Providers\CrudAttributesService;
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD)]
 class Field implements \App\Attributes\PropAttribute
 {
+    protected \App\Attributes\PropAttribute $component;
+
     public function __construct(
         protected readonly string $label,
-        protected readonly Component $component = Component::Input,
-        protected \ReflectionProperty | \ReflectionMethod | null $reflection = null,
+        protected \ReflectionProperty | \ReflectionMethod $reflection,
+        Component $component = Component::Input,
     ) {
+        $this->component = $component->getConfig($this);
     }
 
     public function toProp(CrudAttributesService $attributesService): array
@@ -20,7 +23,7 @@ class Field implements \App\Attributes\PropAttribute
         return [
             'name' => $this->getName(),
             'label' => (string)__($this->label),
-            'component' => $this->component->getConfig($this)->toProp($attributesService),
+            'component' => $this->component->toProp($attributesService),
         ];
     }
 
@@ -32,10 +35,9 @@ class Field implements \App\Attributes\PropAttribute
         return $this->reflection->getName();
     }
 
-    public function setReflection(\ReflectionProperty | \ReflectionMethod $reflection): self
+    public function parse($input)
     {
-        $this->reflection = $reflection;
-        return $this;
+        return $this->component->parse($input);
     }
 
     /**

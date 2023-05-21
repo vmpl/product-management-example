@@ -118,9 +118,8 @@ class Crud extends Controller
             throw new \Exception('not found'); // @todo
         }
 
-        $fields = array_map(fn($field) => $field->getName(), $fields);
         $fields = array_map(
-            fn($fieldName) => ['key' => $fieldName, 'value' => $this->request->input($fieldName)],
+            fn($field) => ['key' => $field->getName(), 'value' => $field->parse($this->request->input($field->getName()))],
             $fields,
         );
         $fields = array_column($fields, 'value', 'key');
