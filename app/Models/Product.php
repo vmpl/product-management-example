@@ -10,16 +10,26 @@ use App\Attributes\Grid;
 use App\Attributes\Form;
 
 #[Grid\Paginator]
-#[Grid\Column('id', 'ID')]
-#[Grid\Column('name', 'Name')]
-#[Grid\Column('number', 'Number')]
-#[Grid\Column('created_at', 'Created')]
-#[Grid\Column('updated_at', 'Updated')]
-#[Form\Field('name', 'Name')]
-#[Form\Field('number', 'Number')]
 class Product extends Model
 {
     use HasFactory;
+
+    #[Grid\Column('ID')]
+    protected int $id;
+
+    #[Grid\Column('Name')]
+    #[Form\Field('Name')]
+    protected string $name;
+
+    #[Grid\Column('Number')]
+    #[Form\Field('Number')]
+    protected ?int $number;
+
+    #[Grid\Column('Created')]
+    protected string $created_at;
+
+    #[Grid\Column('Updated')]
+    protected string $updated_at;
 
     protected $table = 'product_base';
 

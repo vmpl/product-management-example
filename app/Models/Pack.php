@@ -11,15 +11,22 @@ use App\Attributes\Grid;
 use App\Attributes\Form;
 
 #[Grid\Paginator]
-#[Grid\Column('id', 'ID')]
-#[Grid\Column('name', 'Name')]
-#[Grid\Column('created_at', 'Created')]
-#[Grid\Column('updated_at', 'Updated')]
-#[Form\Field('name', 'Name')]
-#[Form\Field('products', 'Products', Form\Field\Component::Children)]
 class Pack extends Model
 {
     use HasFactory;
+
+    #[Grid\Column('ID')]
+    protected int $id;
+
+    #[Grid\Column('Name')]
+    #[Form\Field('Name')]
+    protected string $name;
+
+    #[Grid\Column('Created')]
+    protected string $created_at;
+
+    #[Grid\Column('Updated')]
+    protected string $updated_at;
 
     protected $fillable = ['name'];
 
@@ -34,7 +41,7 @@ class Pack extends Model
     {
         return $this->belongsTo(Team::class);
     }
-
+    #[Form\Field('Products', component: Form\Field\Component::Children)]
     public function products(): HasManyThrough
     {
         return $this->hasManyThrough(Product::class, PackProduct::class);

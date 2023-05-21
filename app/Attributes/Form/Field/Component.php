@@ -25,22 +25,32 @@ enum Component
                 return new self('q-input', $props);
             }
 
-            public static function children(string $name): self
+            public static function children(\ReflectionMethod $method): self
             {
+                /** @var \Illuminate\Database\Eloquent\Relations\Relation $invoke */
+                $invoke = $method->invoke(!$method->isStatic()
+                    ? $method->getDeclaringClass()->newInstanceWithoutConstructor()
+                    : null);
+
                 $props = new \stdClass();
-                $props->urlFetch = $name;
+                $props->urlFetch = $invoke->getModel()::class;
                 return new self('select-children', $props);
             }
 
             public function toProp(CrudAttributesService $attributesService): array
             {
-                $className = $attributesService->getClassName();
-                $urlFetch = $this->props->urlFetch;
-                $results = $className::$urlFetch();
+                switch ($this->type) {
+                    case 'select-children':
+                        $modelPath = $attributesService->getInfoByNamespace($this->props->urlFetch)->path;
+                        $gridProps = $attributesService->getGridProps($modelPath);
 
-                $gridProps = $attributesService->getGridProps();
-                $this->props->size = $gridProps['size'];
-                $this->props->columns = $gridProps['columns'];
+                        $this->props->size = $gridProps['size'];
+                        $this->props->columns = $gridProps['columns'];
+                        $this->props->urlFetch = route('crud.grid.fetch', ['grid' => $modelPath]);
+                        break;
+                    default:
+                        break;
+                }
 
                 return [
                     'type' => $this->type,
@@ -52,7 +62,7 @@ enum Component
         return match ($this) {
             self::Input => $config::input(),
             self::Children => (function () use ($config, $field) {
-                return call_user_func([$config, 'children'], $field->getName());
+                return call_user_func([$config, 'children'], $field->getReflection());
             })(),
         };
     }

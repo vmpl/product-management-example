@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use App\Attributes\Grid;
 use App\Attributes\Form;
@@ -9,15 +10,16 @@ use App\Attributes\Form;
 class CrudAttributesService
 {
     protected function __construct(
-        protected readonly \stdClass $models,
-        public readonly string $grid,
+        public readonly ?string $grid,
+        protected readonly array $byPath,
+        protected readonly array $byNamespace,
     ) {
     }
 
-    public static function init(array $classes, string $grid): self
+    public static function init(array $classes, ?string $grid = ''): self
     {
         $models = Cache::get(md5(static::class), function () use ($classes) {
-            $models = new \stdClass();
+            $models = [];
 
             foreach ($classes as $class) {
                 $reflectionClass = new \ReflectionClass($class);
@@ -25,14 +27,44 @@ class CrudAttributesService
                 $paginatorAttribute = $reflectionClass->getAttributes(Grid\Paginator::class);
                 $paginatorAttribute = array_shift($paginatorAttribute)?->newInstance();
 
-                $columnAttributes = $reflectionClass->getAttributes(Grid\Column::class);
-                $columnAttributes = array_map(fn ($attribute) => $attribute->newInstance(), $columnAttributes);
+                $properties = $reflectionClass->getProperties();
+                $methods = $reflectionClass->getMethods();
 
-                $fieldAttributes = $reflectionClass->getAttributes(Form\Field::class);
-                $fieldAttributes = array_map(fn ($attribute) => $attribute->newInstance(), $fieldAttributes);
+                $columnAttributes = array_map(function ($property) {
+                    $attributes = $property->getAttributes(Grid\Column::class);
+                    /** @var Grid\Column $attribute */
+                    $attribute = array_shift($attributes)?->newInstance();
+                    $attribute?->setReflection($property);
+                    return $attribute;
+                }, $properties);
+                $columnAttributes = array_filter($columnAttributes);
 
-                $modelName = $paginatorAttribute->getPath() ?? $reflectionClass->getShortName();
-                $models->$modelName = new class($reflectionClass, $paginatorAttribute, $columnAttributes, $fieldAttributes) {
+                $fieldAttributes = array_map(function ($property) {
+                    $attributes = $property->getAttributes(Form\Field::class);
+                    /** @var Form\Field $attribute */
+                    $attribute = array_shift($attributes)?->newInstance();
+                    $attribute?->setReflection($property);
+                    return $attribute;
+                }, $properties);
+
+                $fieldAttributes = array_merge(array_map(function ($method) {
+                    $attributes = $method->getAttributes(Form\Field::class);
+                    /** @var Form\Field $attribute */
+                    $attribute = array_shift($attributes)?->newInstance();
+                    $attribute?->setReflection($method);
+                    return $attribute;
+                }, $methods), $fieldAttributes);
+                $fieldAttributes = array_filter($fieldAttributes);
+
+                $info = new \stdClass();
+                $info->namespace = $reflectionClass->getName();
+                $info->path = $paginatorAttribute->getPath() ?? $reflectionClass->getShortName();
+                $info->attributes = new class(
+                    $reflectionClass,
+                    $paginatorAttribute,
+                    (array)$columnAttributes,
+                    (array)$fieldAttributes,
+                ) {
                     /**
                      * @param Grid\Paginator $paginator
                      * @param Grid\Column[] $columns
@@ -46,30 +78,54 @@ class CrudAttributesService
                     ) {
                     }
                 };
+
+                $models[] = $info;
             }
 
             return $models;
         });
 
-        return new static($models, $grid);
+        return new static(
+            $grid,
+            array_column($models, null, 'path'),
+            array_column($models, null, 'namespace'),
+        );
+    }
+
+    public function getInfoByPath(string $path)
+    {
+        $info = @$this->byPath[$path];
+        if (!$info) {
+            throw new ModelNotFoundException($path);
+        }
+        return $info;
+    }
+
+    public function getInfoByNamespace(string $namespace)
+    {
+        $info = @$this->byNamespace[$namespace];
+        if (!$info) {
+            throw new ModelNotFoundException($namespace);
+        }
+        return $info;
+    }
+
+    public function getModel(string $grid = null)
+    {
+        $grid = $grid ?? $this->grid;
+        return $this->getInfoByPath($grid)->attributes;
     }
 
     public function getListProps(): array
     {
-        $models = (array)$this->models;
         return [
-            'models' => array_keys($models),
+            'models' => array_keys($this->byPath),
         ];
     }
 
-    public function getGridProps(): ?array
+    public function getGridProps(string $grid = ''): ?array
     {
-        $grid = $this->grid;
-        $model = $this->models->$grid;
-        if (!$model) {
-            return null;
-        }
-
+        $model = $this->getModel($grid);
         return [
             'size' => $model->paginator->getSize(),
             'columns' => array_map(fn ($column) => $column->toProp($this), $model->columns),
@@ -79,14 +135,9 @@ class CrudAttributesService
 
     public function getFormProps(): ?array
     {
-        $grid = $this->grid;
-        $model = $this->models->$grid;
-        if (!$model) {
-            return null;
-        }
-
+        $model = $this->getModel();
         return [
-            'fields' => array_map(fn ($field) => $field->toProp($this), $model->fields),
+            'fields' => array_values(array_map(fn ($field) => $field->toProp($this), $model->fields)),
             ...$this->getListProps(),
         ];
     }
@@ -97,11 +148,7 @@ class CrudAttributesService
      */
     public function getFields(): ?array
     {
-        $grid = $this->grid;
-        $model = $this->models->$grid;
-        if (!$model) {
-            return null;
-        }
+        $model = $this->getModel();
 
         /** @var Form\Field[] $fields */
         $fields = $model->fields;
@@ -114,11 +161,7 @@ class CrudAttributesService
 
     public function getColumns(): ?array
     {
-        $grid = $this->grid;
-        $model = $this->models->$grid;
-        if (!$model) {
-            return null;
-        }
+        $model = $this->getModel();
 
         /** @var Grid\Column[] $fields */
         $fields = $model->columns;
@@ -131,11 +174,7 @@ class CrudAttributesService
 
     public function getClassName(): ?string
     {
-        $grid = $this->grid;
-        $model = $this->models->$grid;
-        if (!$model) {
-            return null;
-        }
+        $model = $this->getModel();
         /** @var \ReflectionClass $reflectionClass */
         $reflectionClass = $model->reflectionClass;
         return $reflectionClass->getName();
