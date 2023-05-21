@@ -123,7 +123,7 @@ class CrudAttributesService
         ];
     }
 
-    public function getGridProps(string $grid = ''): ?array
+    public function getGridProps(string $grid = null): ?array
     {
         $model = $this->getModel($grid);
         return [

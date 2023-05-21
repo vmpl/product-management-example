@@ -6,6 +6,8 @@
         :loading="loading"
         :pagination="pagination"
         row-key="id"
+        :selection="valueSelection"
+        v-model:selected="value"
         separator="vertical"
         @request="onRequest"
     >
@@ -57,6 +59,19 @@ export default {
         urlFetch: String,
         urlForm: String,
         urlDelete: String,
+        selection: String,
+        modelValue: Array<Object>,
+    },
+    emits: ['update:modelValue'],
+    computed: {
+        value: {
+            get() {
+                return this.modelValue;
+            },
+            set(value) {
+                this.$emit('update:modelValue', value);
+            }
+        }
     },
     data() {
         const gridColumns = !this.urlForm && !this.urlDelete
@@ -70,9 +85,12 @@ export default {
                     sortable: false,
                 }
             ];
+        const valueSelection = this.selection;
+        console.log(valueSelection)
 
         return {
             gridColumns,
+            valueSelection,
             gridRows: [],
             filter: Object.fromEntries(this.columns.map(it => {
                 if (!it.searchable) {
