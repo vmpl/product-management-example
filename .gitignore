@@ -26,3 +26,5 @@ yarn-error.log
 .npm
 !.npm/.gitkeep
 .bash_history
+.ignore
+!.ignore/.gitkeep

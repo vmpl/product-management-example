@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Jetstream\Jetstream;
 
@@ -36,5 +37,7 @@ class AppServiceProvider extends ServiceProvider
         Jetstream::role('reader', 'Reader', [
             'read',
         ])->description('Reader users have the ability to read.');
+
+        JsonResource::withoutWrapping();
     }
 }
