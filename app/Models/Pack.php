@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use App\Attributes\Grid;
 use App\Attributes\Form;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Grid\Paginator]
 class Pack extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     #[Grid\Column('ID')]
     protected int $id;

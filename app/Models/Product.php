@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Attributes\Grid;
 use App\Attributes\Form;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Grid\Paginator]
 class Product extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     #[Grid\Column('ID')]
     public int $id;
