@@ -6,6 +6,8 @@
         use-chips
         :label="label"
         @click.prevent.stop="() => $refs.gridDialog.show()"
+        :rules="rules"
+        :lazy-rules="lazyRules"
     />
     <q-dialog ref="gridDialog">
         <ModelGrid
@@ -19,6 +21,7 @@
 </template>
 <script lang="ts">
 import ModelGrid from "./ModelGrid.vue";
+import {PropType} from "vue";
 
 export default {
     components: {ModelGrid},
@@ -28,6 +31,8 @@ export default {
         columns: Array<Object>,
         urlFetch: String,
         modelValue: Array<Object>,
+        rules: Array<Function>,
+        lazyRules: Object as PropType<Boolean | 'ondemand' | undefined>,
     },
     emits: ['update:modelValue'],
     computed: {

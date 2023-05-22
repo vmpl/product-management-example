@@ -194,6 +194,6 @@ class CrudAttributesService
         $model = $this->getModel();
         $fields = $model->fields;
         $fields = array_map(fn ($field) => [$field->getName(), $field->validationRules], $fields);
-        return $fields;
+        return array_column($fields, 1, 0);
     }
 }

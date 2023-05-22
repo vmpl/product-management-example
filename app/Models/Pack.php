@@ -19,7 +19,7 @@ class Pack extends Model
     protected int $id;
 
     #[Grid\Column('Name')]
-    #[Form\Field('Name')]
+    #[Form\Field('Name', validationRules: 'required')]
     protected string $name;
 
     #[Grid\Column('Created')]
@@ -62,7 +62,7 @@ class Pack extends Model
         return $this->belongsTo(Team::class);
     }
 
-    #[Form\Field('Products', component: Form\Field\Component::Children)]
+    #[Form\Field('Products', component: Form\Field\Component::Children, validationRules: 'array|min:2')]
     public function products(): HasManyThrough
     {
         return $this->hasManyThrough(
