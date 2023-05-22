@@ -2,7 +2,9 @@
 
 namespace App\Attributes;
 
+use App\Providers\CrudAttributesService;
+
 interface PropAttribute
 {
-    public function toProp(): array;
+    public function toProp(CrudAttributesService $attributesService): array;
 }

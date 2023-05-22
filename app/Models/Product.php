@@ -10,16 +10,26 @@ use App\Attributes\Grid;
 use App\Attributes\Form;
 
 #[Grid\Paginator]
-#[Grid\Column('id', 'ID')]
-#[Grid\Column('name', 'Name')]
-#[Grid\Column('number', 'Number')]
-#[Grid\Column('created_at', 'Created')]
-#[Grid\Column('updated_at', 'Updated')]
-#[Form\Field('name', 'Name')]
-#[Form\Field('number', 'Number')]
 class Product extends Model
 {
     use HasFactory;
+
+    #[Grid\Column('ID')]
+    public int $id;
+
+    #[Grid\Column('Name')]
+    #[Form\Field('Name')]
+    public string $name;
+
+    #[Grid\Column('Number')]
+    #[Form\Field('Number')]
+    public ?int $number;
+
+    #[Grid\Column('Created')]
+    public string $created_at;
+
+    #[Grid\Column('Updated')]
+    public string $updated_at;
 
     protected $table = 'product_base';
 
@@ -34,4 +44,11 @@ class Product extends Model
     }
 
     protected $fillable = ['name', 'number'];
+
+    public function save(array $options = [])
+    {
+        $this->setAttribute('updated_at', date('Y-m-d H:i:s'));
+
+        return parent::save($options);
+    }
 }

@@ -29,27 +29,22 @@ Route::get('/crud', [Crud::class, 'list'])
     ->name('crud');
 
 Route::get('/crud/{grid}', [Crud::class, 'grid'])
-    ->where('grid', '\w+')
     ->name('crud.grid');
 
 Route::get('/crud/{grid}/fetch', [Crud::class, 'gridFetch'])
-    ->where('grid', '\w+')
     ->name('crud.grid.fetch');
 
 Route::delete('/crud/{grid}/delete/{id}', [Crud::class, 'deleteRecord'])
-    ->where('grid', '\w+')
-    ->where('id', '\d+')
     ->name('crud.grid.delete');
 
 Route::get('/crud/{grid}/form/{id?}', [Crud::class, 'form'])
-    ->where('grid', '\w+')
-    ->where('id', '\d+')
     ->name('crud.grid.form');
 
 Route::post('/crud/{grid}/form/{id?}', [Crud::class, 'save'])
-    ->where('grid', '\w+')
-    ->where('id', '\d+')
     ->name('crud.grid.form.post');
+
+Route::pattern('grid', '\w+');
+Route::pattern('id', '\d+');
 
 Route::middleware([
     'auth:sanctum',

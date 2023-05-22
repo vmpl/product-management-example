@@ -2,37 +2,19 @@
 
 namespace App\Attributes\Form\Field;
 
+use App\Attributes\Form\Field\Component\Input;
+use App\Attributes\Form\Field\Component\SelectChildren;
+
 enum Component
 {
     case Input;
+    case Children;
 
-    public function getConfig(): \App\Attributes\PropAttribute
+    public function getConfig(\App\Attributes\Form\Field $field): \App\Attributes\FieldComponent
     {
-        $config = new class implements \App\Attributes\PropAttribute {
-            public function __construct(
-                public readonly ?string $type = null,
-                public readonly \stdClass $props = new \stdClass(),
-            ) {
-            }
-
-            public static function input(): self
-            {
-                $props = new \stdClass();
-                $props->outlined = true;
-                return new self('q-input', $props);
-            }
-
-            public function toProp(): array
-            {
-                return [
-                    'type' => $this->type,
-                    'props' => $this->props,
-                ];
-            }
-        };
-
         return match ($this) {
-            static::Input => $config::input()
+            self::Input => Input::init($field->getReflection()),
+            self::Children => SelectChildren::init($field->getReflection()),
         };
     }
 }

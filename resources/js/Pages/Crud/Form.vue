@@ -22,6 +22,7 @@
 </template>
 <script>
 import CrudLayout from "../../Layouts/CrudLayout.vue";
+import SelectChildren from "../../Components/SelectChildren.vue";
 import {router} from "@inertiajs/vue3";
 import {QInput} from "quasar";
 
@@ -35,6 +36,7 @@ export default {
     components: {
         CrudLayout,
         QInput,
+        SelectChildren,
     },
     data() {
         const form = Object.fromEntries(this.fields.map(it => [it.name, this.current[it.name]]));

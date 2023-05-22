@@ -15,9 +15,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind('app.crud.grid', function (Application $application) {
+            /** @var \Illuminate\Http\Request $request */
+            $request = $application->make(\Illuminate\Http\Request::class);
+            return $request->route('grid');
+        });
         $this->app->singleton(CrudAttributesService::class, function (Application $app) {
             return CrudAttributesService::init(
-                $app['config']->get('app.eloquent_crud') ?? []
+                $app['config']->get('app.eloquent_crud') ?? [],
+                $app->get('app.crud.grid')
             );
         });
     }

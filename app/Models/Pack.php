@@ -11,22 +11,50 @@ use App\Attributes\Grid;
 use App\Attributes\Form;
 
 #[Grid\Paginator]
-#[Grid\Column('id', 'ID')]
-#[Grid\Column('name', 'Name')]
-#[Grid\Column('created_at', 'Created')]
-#[Grid\Column('updated_at', 'Updated')]
-#[Form\Field('name', 'Name')]
 class Pack extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    #[Grid\Column('ID')]
+    protected int $id;
+
+    #[Grid\Column('Name')]
+    #[Form\Field('Name')]
+    protected string $name;
+
+    #[Grid\Column('Created')]
+    protected string $created_at;
+
+    #[Grid\Column('Updated')]
+    protected string $updated_at;
+
+    protected $fillable = ['name', 'products'];
 
     protected $table = 'product_pack';
+    private \Illuminate\Database\Eloquent\Collection $_products;
 
     protected static function booted()
     {
+        $saveRelation = function (self $pack) {
+            $productIds = [];
+            /** @var Product $product */
+            foreach ($pack->_products as $product) {
+                $productIds[] = $product->getAttribute('id');
+                $data = [
+                    'parent_id' => $pack->getAttribute('id'),
+                    'child_id' => $product->getAttribute('id'),
+                ];
+                PackProduct::updateOrInsert($data, $data);
+            }
+
+            PackProduct::where('parent_id', $pack->getAttribute('id'))
+                ->whereNotIn('child_id', $productIds)
+                ->delete();
+        };
+
         static::addGlobalScope(new Teams);
+        static::created($saveRelation);
+        static::updated($saveRelation);
     }
 
     public function team(): BelongsTo
@@ -34,8 +62,39 @@ class Pack extends Model
         return $this->belongsTo(Team::class);
     }
 
+    #[Form\Field('Products', component: Form\Field\Component::Children)]
     public function products(): HasManyThrough
     {
-        return $this->hasManyThrough(PackProduct::class, Product::class);
+        return $this->hasManyThrough(
+            Product::class,
+            PackProduct::class,
+            'parent_id',
+            'id',
+            'id',
+            'child_id'
+        );
+    }
+
+    public function setAttribute($key, $value)
+    {
+        if ($key === 'products') {
+            $this->_products = $value;
+            return $this;
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
+    public function save(array $options = [])
+    {
+        $this->setAttribute('updated_at', date('Y-m-d H:i:s'));
+        return parent::save($options);
+    }
+
+    public function toArray()
+    {
+        $array = parent::toArray();
+        $array['products'] = $this->products()->get()->toArray();
+        return $array;
     }
 }
