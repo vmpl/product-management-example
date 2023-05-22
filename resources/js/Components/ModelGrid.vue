@@ -6,7 +6,7 @@
         :loading="loading"
         :pagination="pagination"
         row-key="id"
-        :selection="valueSelection"
+        :selection="selection"
         v-model:selected="value"
         separator="vertical"
         @request="onRequest"
@@ -51,6 +51,7 @@
 <script lang="ts">
 import {router} from "@inertiajs/vue3";
 import axios from "axios";
+import {PropType} from "vue";
 
 export default {
     props: {
@@ -59,7 +60,7 @@ export default {
         urlFetch: String,
         urlForm: String,
         urlDelete: String,
-        selection: String,
+        selection: Object as PropType<"single" | "multiple" | "none" | undefined>,
         modelValue: Array<Object>,
     },
     emits: ['update:modelValue'],
@@ -71,24 +72,24 @@ export default {
             set(value) {
                 this.$emit('update:modelValue', value);
             }
-        }
+        },
+        gridColumns() {
+            const columns = this.columns;
+
+            !this.urlForm && !this.urlDelete
+                || columns.push({
+                    name: 'actions',
+                    label: 'Actions',
+                    required: false,
+                    align: 'right',
+                    sortable: false,
+                });
+
+            return columns;
+        },
     },
     data() {
-        const valueSelection = this.selection;
-        const gridColumns = this.columns;
-
-        !this.urlForm && !this.urlDelete
-            || gridColumns.push({
-                name: 'actions',
-                label: 'Actions',
-                required: false,
-                align: 'right',
-                sortable: false,
-            });
-
         return {
-            gridColumns,
-            valueSelection,
             gridRows: [],
             filter: Object.fromEntries(this.columns.map(it => {
                 if (!it.searchable) {
@@ -159,7 +160,7 @@ export default {
                         })
                     })
             });
-        }
+        },
     },
     mounted() {
         this.$refs.tableElement.requestServerInteraction();

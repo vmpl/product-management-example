@@ -36,6 +36,8 @@ class CrudAttributesService
                     self::mapReflection($methods, Form\Field::class),
                 );
 
+                $massActionAttributes = self::mapReflection($methods, Grid\MassAction::class);
+
                 $info = new \stdClass();
                 $info->namespace = $reflectionClass->getName();
                 $info->path = $paginatorAttribute->getPath() ?? $reflectionClass->getShortName();
@@ -44,6 +46,7 @@ class CrudAttributesService
                     $paginatorAttribute,
                     (array)$columnAttributes,
                     (array)$fieldAttributes,
+                    (array)$massActionAttributes,
                 ) {
                     /**
                      * @param Grid\Paginator $paginator
@@ -55,6 +58,7 @@ class CrudAttributesService
                         public readonly Grid\Paginator   $paginator,
                         public readonly array            $columns,
                         public readonly array            $fields,
+                        public readonly array            $massActions,
                     ) {
                     }
                 };
@@ -134,10 +138,35 @@ class CrudAttributesService
     public function getGridProps(string $grid = null): ?array
     {
         $model = $this->getModel($grid);
+
         return [
             'size' => $model->paginator->getSize(),
             'columns' => array_map(fn ($column) => $column->toProp($this), $model->columns),
             ...$this->getListProps(),
+        ];
+    }
+
+    /**
+     * @param string|null $grid
+     * @return Grid\MassAction[]
+     */
+    public function getGridActions(string $grid = null): ?array
+    {
+        $model = $this->getModel($grid);
+        $actions = array_map(fn(Grid\MassAction $massAction) => [
+            (string)__($massAction->label),
+            $massAction,
+        ], $model->massActions);
+        return array_column($actions, 1, 0);
+    }
+
+    public function getGridActionsProps(string $grid = null): ?array
+    {
+        $model = $this->getModel($grid);
+        $actions = array_map(fn(Grid\MassAction $massAction) => (string)__($massAction->label), $model->massActions);
+
+        return [
+            'actions' => array_values($actions),
         ];
     }
 

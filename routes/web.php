@@ -37,6 +37,10 @@ Route::get('/crud/{grid}/fetch', [Crud::class, 'gridFetch'])
 Route::delete('/crud/{grid}/delete/{id}', [Crud::class, 'deleteRecord'])
     ->name('crud.grid.delete');
 
+Route::post('/crud/{grid}/action/{Action}', [Crud::class, 'massAction'])
+    ->where('Action', '\w+')
+    ->name('crud.grid.action');
+
 Route::get('/crud/{grid}/form/{id?}', [Crud::class, 'form'])
     ->name('crud.grid.form');
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\Active;
 use App\Models\Scopes\Teams;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -53,6 +54,7 @@ class Pack extends Model
         };
 
         static::addGlobalScope(new Teams);
+        static::addGlobalScope(new Active);
         static::created($saveRelation);
         static::updated($saveRelation);
     }
@@ -96,5 +98,23 @@ class Pack extends Model
         $array = parent::toArray();
         $array['products'] = $this->products()->get()->toArray();
         return $array;
+    }
+
+    #[Grid\MassAction('Active')]
+    public static function massActive(array $ids)
+    {
+        static::whereIn('id', $ids)->get()->toQuery()->update([
+            'active' => true,
+        ]);
+        return response()->json();
+    }
+
+    #[Grid\MassAction('Disable')]
+    public static function massDisable(array $ids)
+    {
+        static::whereIn('id', $ids)->get()->toQuery()->update([
+            'active' => false
+        ]);
+        return response()->json();
     }
 }

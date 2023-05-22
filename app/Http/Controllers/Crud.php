@@ -35,6 +35,7 @@ class Crud extends Controller
     public function grid()
     {
         $gridProps = $this->attributesService->getGridProps();
+        $gridActionsProps = $this->attributesService->getGridActionsProps();
         if (!$gridProps) {
             throw new \Exception('not found'); // @todo
         }
@@ -43,7 +44,9 @@ class Crud extends Controller
             'urlFetch' => route('crud.grid.fetch', ['grid' => $this->attributesService->grid]),
             'urlForm' => \route('crud.grid.form', ['grid' => $this->attributesService->grid, 'id' => ':id']),
             'urlDelete' => \route('crud.grid.delete', ['grid' => $this->attributesService->grid, 'id' => ':id']),
+            'urlAction' => \route('crud.grid.action', ['grid' => $this->attributesService->grid, 'Action' => ':Action']),
             ...$gridProps,
+            ...$gridActionsProps,
         ]);
     }
 
@@ -92,6 +95,14 @@ class Crud extends Controller
 
         $id = $this->request->route('id');
         $className::destroy($id);
+        return response()->json();
+    }
+
+    public function massAction()
+    {
+        $gridActionsProps = $this->attributesService->getGridActions();
+        $massAction = $gridActionsProps[$this->request->route('Action')];
+        $massAction->invoke($this->request);
         return response()->json();
     }
 
