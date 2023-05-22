@@ -14,7 +14,10 @@
                                name: field.name,
                                label: field.label,
                                ...field.component.props
-                           }"/>
+                           }"
+                           :rules="[val => rules(field.name, val)]"
+                           lazy-rules
+                />
             </template>
             <q-btn label="Submit" type="submit" color="teal-10"/>
         </q-form>
@@ -25,6 +28,7 @@ import CrudLayout from "../../Layouts/CrudLayout.vue";
 import SelectChildren from "../../Components/SelectChildren.vue";
 import {router} from "@inertiajs/vue3";
 import {QInput} from "quasar";
+import axios from "axios";
 
 export default {
     props: {
@@ -45,6 +49,19 @@ export default {
         }
     },
     methods: {
+        rules(fieldName, value) {
+            const data = Object.fromEntries([[fieldName, value ?? '']]);
+            return axios.post(this.postUrl, data)
+                .then(response => true)
+                .catch((error) => {
+                    const {response} = error;
+                    if (response.status === 422) {
+                        return response.data.message;
+                    }
+
+                    throw new error;
+                })
+        },
         submit() {
             router.post(this.postUrl, this.form);
         }

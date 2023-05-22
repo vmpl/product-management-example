@@ -18,9 +18,4 @@ class Input extends FieldComponent
     {
         return 'q-input';
     }
-
-    static function init(\ReflectionMethod|\ReflectionProperty $reflection = null): static
-    {
-        return new static();
-    }
 }

@@ -8,12 +8,13 @@ use App\Providers\CrudAttributesService;
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD)]
 class Field implements \App\Attributes\PropAttribute
 {
-    protected \App\Attributes\FieldComponent $component;
+    public readonly \App\Attributes\FieldComponent $component;
 
     public function __construct(
-        protected readonly string $label,
-        Component $component = Component::Input,
-        protected \ReflectionProperty|\ReflectionMethod|null $reflection = null,
+        protected readonly string                                                    $label,
+        Component                                                                    $component = Component::Input,
+        public readonly \Illuminate\Contracts\Validation\ValidationRule|array|string $validationRules = '',
+        protected \ReflectionProperty|\ReflectionMethod|null                         $reflection = null,
     ) {
         $this->component = $component->getConfig($this);
     }

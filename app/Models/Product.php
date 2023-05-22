@@ -18,11 +18,11 @@ class Product extends Model
     public int $id;
 
     #[Grid\Column('Name')]
-    #[Form\Field('Name')]
+    #[Form\Field('Name', validationRules: 'required')]
     public string $name;
 
     #[Grid\Column('Number')]
-    #[Form\Field('Number')]
+    #[Form\Field('Number', validationRules: 'integer')]
     public ?int $number;
 
     #[Grid\Column('Created')]

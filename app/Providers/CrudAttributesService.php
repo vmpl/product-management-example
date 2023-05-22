@@ -187,4 +187,13 @@ class CrudAttributesService
         $reflectionClass = $model->reflectionClass;
         return $reflectionClass->getName();
     }
+
+    public function getFormValidation(string $grid = null)
+    {
+        /** @var Form\Field[] $fields */
+        $model = $this->getModel();
+        $fields = $model->fields;
+        $fields = array_map(fn ($field) => [$field->getName(), $field->validationRules], $fields);
+        return $fields;
+    }
 }

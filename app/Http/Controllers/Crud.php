@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CrudRequest;
 use App\Providers\CrudAttributesService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -111,7 +112,7 @@ class Crud extends Controller
         return Inertia::render('Crud/Form', $params);
     }
 
-    public function save()
+    public function save(CrudRequest $request)
     {
         $className = $this->attributesService->getClassName();
         $fields = $this->attributesService->getFields();
@@ -120,7 +121,7 @@ class Crud extends Controller
         }
 
         $fields = array_map(
-            fn($field) => ['key' => $field->getName(), 'value' => $field->decode($this->request->input($field->getName()))],
+            fn($field) => ['key' => $field->getName(), 'value' => $field->decode($request->safe()->offsetGet($field->getName()))],
             $fields,
         );
         $fields = array_column($fields, 'value', 'key');

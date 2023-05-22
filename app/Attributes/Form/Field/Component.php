@@ -13,8 +13,8 @@ enum Component
     public function getConfig(\App\Attributes\Form\Field $field): \App\Attributes\FieldComponent
     {
         return match ($this) {
-            self::Input => Input::init($field->getReflection()),
-            self::Children => SelectChildren::init($field->getReflection()),
+            self::Input => Input::init($field),
+            self::Children => SelectChildren::init($field),
         };
     }
 }

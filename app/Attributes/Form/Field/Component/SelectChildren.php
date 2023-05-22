@@ -19,9 +19,10 @@ class SelectChildren extends FieldComponent
         return 'select-children';
     }
 
-    static function init(\ReflectionMethod|\ReflectionProperty $reflection = null): static
+    static function init(\App\Attributes\Form\Field $field): static
     {
         /** @var \Illuminate\Database\Eloquent\Relations\Relation $invoke */
+        $reflection = $field->getReflection();
         $relation = $reflection->invoke(!$reflection->isStatic()
             ? $reflection->getDeclaringClass()->newInstanceWithoutConstructor()
             : null);

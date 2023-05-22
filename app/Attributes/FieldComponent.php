@@ -11,7 +11,11 @@ abstract class FieldComponent implements PropAttribute
     ) {
     }
 
-    abstract static function init(\ReflectionMethod | \ReflectionProperty $reflection = null): static;
+    static function init(\App\Attributes\Form\Field $field): static
+    {
+        $fieldComponent = new static();
+        return $fieldComponent;
+    }
 
     abstract public static function getType(): string;
 
