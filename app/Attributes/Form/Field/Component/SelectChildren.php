@@ -42,4 +42,12 @@ class SelectChildren extends FieldComponent
 
         return $component;
     }
+
+    public function decode($input): mixed
+    {
+        $ids = array_map(fn ($row) => $row['id'], $input ?? []);
+        $model = $this->relation->getModel();
+
+        return $model::find($ids);
+    }
 }

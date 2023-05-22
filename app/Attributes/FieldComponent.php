@@ -23,4 +23,9 @@ abstract class FieldComponent implements PropAttribute
             'props' => $this->props,
         ];
     }
+
+    public function decode($input): mixed
+    {
+        return $input;
+    }
 }

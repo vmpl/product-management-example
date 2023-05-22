@@ -74,19 +74,17 @@ export default {
         }
     },
     data() {
-        const gridColumns = !this.urlForm && !this.urlDelete
-            ? this.columns
-            : [
-                ...this.columns, {
-                    name: 'actions',
-                    label: 'Actions',
-                    required: false,
-                    align: 'right',
-                    sortable: false,
-                }
-            ];
         const valueSelection = this.selection;
-        console.log(valueSelection)
+        const gridColumns = this.columns;
+
+        !this.urlForm && !this.urlDelete
+            || gridColumns.push({
+                name: 'actions',
+                label: 'Actions',
+                required: false,
+                align: 'right',
+                sortable: false,
+            });
 
         return {
             gridColumns,

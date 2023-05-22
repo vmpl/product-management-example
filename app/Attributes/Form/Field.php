@@ -8,12 +8,12 @@ use App\Providers\CrudAttributesService;
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD)]
 class Field implements \App\Attributes\PropAttribute
 {
-    protected \App\Attributes\PropAttribute $component;
+    protected \App\Attributes\FieldComponent $component;
 
     public function __construct(
         protected readonly string $label,
-        protected \ReflectionProperty | \ReflectionMethod $reflection,
         Component $component = Component::Input,
+        protected \ReflectionProperty|\ReflectionMethod|null $reflection = null,
     ) {
         $this->component = $component->getConfig($this);
     }
@@ -35,9 +35,9 @@ class Field implements \App\Attributes\PropAttribute
         return $this->reflection->getName();
     }
 
-    public function parse($input)
+    public function decode($input)
     {
-        return $this->component->parse($input);
+        return $this->component->decode($input);
     }
 
     /**

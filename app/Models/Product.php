@@ -15,21 +15,21 @@ class Product extends Model
     use HasFactory;
 
     #[Grid\Column('ID')]
-    protected int $id;
+    public int $id;
 
     #[Grid\Column('Name')]
     #[Form\Field('Name')]
-    protected string $name;
+    public string $name;
 
     #[Grid\Column('Number')]
     #[Form\Field('Number')]
-    protected ?int $number;
+    public ?int $number;
 
     #[Grid\Column('Created')]
-    protected string $created_at;
+    public string $created_at;
 
     #[Grid\Column('Updated')]
-    protected string $updated_at;
+    public string $updated_at;
 
     protected $table = 'product_base';
 
@@ -44,4 +44,11 @@ class Product extends Model
     }
 
     protected $fillable = ['name', 'number'];
+
+    public function save(array $options = [])
+    {
+        $this->setAttribute('updated_at', date('Y-m-d H:i:s'));
+
+        return parent::save($options);
+    }
 }

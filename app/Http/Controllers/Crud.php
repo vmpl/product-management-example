@@ -103,11 +103,12 @@ class Crud extends Controller
         }
 
         $id = $this->request->route('id');
-        return Inertia::render('Crud/Form', [
+        $params = [
             'postUrl' => \route('crud.grid.form.post', ['grid' => $this->attributesService->grid, 'id' => $id]),
-            'current' => $className::find($id)?->toArray() ?? [],
+            'current' => ($className::find($id) ?? new $className())->toArray(),
             ...$formProps,
-        ]);
+        ];
+        return Inertia::render('Crud/Form', $params);
     }
 
     public function save()
@@ -119,7 +120,7 @@ class Crud extends Controller
         }
 
         $fields = array_map(
-            fn($field) => ['key' => $field->getName(), 'value' => $field->parse($this->request->input($field->getName()))],
+            fn($field) => ['key' => $field->getName(), 'value' => $field->decode($this->request->input($field->getName()))],
             $fields,
         );
         $fields = array_column($fields, 'value', 'key');

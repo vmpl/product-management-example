@@ -13,7 +13,7 @@
             :columns="columns"
             :url-fetch="urlFetch"
             selection="multiple"
-            v-model="gridSelection"
+            v-model="value"
         />
     </q-dialog>
 </template>
@@ -27,25 +27,29 @@ export default {
         size: Number,
         columns: Array<Object>,
         urlFetch: String,
-        selection: Array<Object>,
+        modelValue: Array<Object>,
     },
-    data() {
-        return {
-            gridSelection: this.selection ?? [],
-        }
-    },
+    emits: ['update:modelValue'],
     computed: {
+        value: {
+            get() {
+                return this.modelValue ?? [];
+            },
+            set(value) {
+                this.$emit('update:modelValue', value);
+            }
+        },
         selectionRead: {
             get() {
-                return this.gridSelection.map(({id, name}) => {
+                return this.value.map(({id, name}) => {
                     return {label: name, key: id};
                 })
             },
             set(value) {
                 const keys = value.map(it => it.key);
-                this.gridSelection = this.gridSelection.filter(it => keys.includes(it.id));
+                this.value = this.value.filter(it => keys.includes(it.id));
             }
-        }
+        },
     }
 }
 </script>

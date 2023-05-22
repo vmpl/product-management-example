@@ -10,7 +10,7 @@ enum Component
     case Input;
     case Children;
 
-    public function getConfig(\App\Attributes\Form\Field $field): \App\Attributes\PropAttribute
+    public function getConfig(\App\Attributes\Form\Field $field): \App\Attributes\FieldComponent
     {
         return match ($this) {
             self::Input => Input::init($field->getReflection()),
