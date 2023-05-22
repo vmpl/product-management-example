@@ -27,4 +27,9 @@ class CrudRequest extends FormRequest
         $attributesService = App::get(CrudAttributesService::class);
         return $attributesService->getFormValidation();
     }
+
+    public function isPrecognitive()
+    {
+        return $this->header('Precognition', false);
+    }
 }

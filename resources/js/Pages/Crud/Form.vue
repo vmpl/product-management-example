@@ -51,7 +51,10 @@ export default {
     methods: {
         rules(fieldName, value) {
             const data = Object.fromEntries([[fieldName, value ?? '']]);
-            return axios.post(this.postUrl, data)
+            return axios.post(this.postUrl, data, {headers: {
+                'Precognition': true,
+                'Precognition-Validate-Only': fieldName
+            }})
                 .then(response => true)
                 .catch((error) => {
                     const {response} = error;
