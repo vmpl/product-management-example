@@ -40,6 +40,28 @@
             </q-tr>
         </template>
 
+        <template v-slot:body-cell="props">
+            <q-td :props="props">
+                <template v-if="props.col.component.type === 'inline'">
+                    {{props.row[props.col.field]}}
+                </template>
+                <template v-else-if="props.col.component.type === 'q-img'">
+                    <q-img v-if="props.row[props.col.field]"
+                        :src="props.row[props.col.field].download_url"
+                        loading="lazy"
+                        :width="props.col.component.props.width"
+                        :height="props.col.component.props.height"
+                        fit="cover"
+                    />
+                    <q-badge v-else label="None"/>
+                </template>
+                <template v-else>
+                    {{props.col.field}}
+                    {{Object.keys(props.row)}}
+                    {{props.col.component}}
+                </template>
+            </q-td>
+        </template>
         <template v-slot:body-cell-actions="props">
             <q-td auto-width class="q-gutter-x-sm">
                 <q-btn icon="edit" @click.stop="() => onEdit(props)"/>
@@ -61,7 +83,10 @@ export default {
         urlForm: String,
         urlDelete: String,
         selection: Object as PropType<"single" | "multiple" | "none" | undefined>,
-        modelValue: Array<Object>,
+        modelValue: {
+            type: Array<Object>,
+            default: [],
+        },
     },
     emits: ['update:modelValue'],
     computed: {

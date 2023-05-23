@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Attributes\Grid;
 use App\Attributes\Form;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Grid\Paginator]
@@ -16,10 +17,10 @@ class Product extends Model
     use HasFactory;
     use SoftDeletes;
 
-    #[Grid\Column('ID')]
+    #[Grid\Column('ID', sortNumber: 10)]
     public int $id;
 
-    #[Grid\Column('Name')]
+    #[Grid\Column('Name', sortNumber: 30)]
     #[Form\Field('Name', validationRules: 'required')]
     public string $name;
 
@@ -36,6 +37,8 @@ class Product extends Model
     protected $table = 'product_base';
 
     protected $fillable = ['name', 'number'];
+
+    protected $with = ['image'];
 
     protected static function booted()
     {
@@ -65,6 +68,12 @@ class Product extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    #[Grid\Column('Image', false, false, 20, Grid\Column\Component::Image)]
+    public function image(): HasOne
+    {
+        return $this->hasOne(ProductImage::class, 'id', 'number');
     }
 
     public function save(array $options = [])

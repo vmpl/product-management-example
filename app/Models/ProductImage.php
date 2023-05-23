@@ -20,7 +20,7 @@ class ProductImage extends Model
     {
         return static::findOr($id, function () use ($id) {
             $response = Http::get("https://picsum.photos/id/{$id}/info");
-            $downloadUrl = $response->json('url');
+            $downloadUrl = $response->json('download_url');
 
             return static::create(['id' => $id, 'download_url' => $downloadUrl]);
         });

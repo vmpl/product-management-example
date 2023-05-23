@@ -30,7 +30,10 @@ class CrudAttributesService
                 $properties = $reflectionClass->getProperties();
                 $methods = $reflectionClass->getMethods();
 
-                $columnAttributes = self::mapReflection($properties, Grid\Column::class);
+                $columnAttributes = array_merge(
+                    self::mapReflection($properties, Grid\Column::class),
+                    self::mapReflection($methods, Grid\Column::class),
+                );
                 $fieldAttributes = array_merge(
                     self::mapReflection($properties, Form\Field::class),
                     self::mapReflection($methods, Form\Field::class),
@@ -138,10 +141,13 @@ class CrudAttributesService
     public function getGridProps(string $grid = null): ?array
     {
         $model = $this->getModel($grid);
+        /** @var Grid\Column[] $columns */
+        $columns = $model->columns;
+        usort($columns, fn (Grid\Column $a, Grid\Column $b) => $a->sortNumber <=> $b->sortNumber);
 
         return [
             'size' => $model->paginator->getSize(),
-            'columns' => array_map(fn ($column) => $column->toProp($this), $model->columns),
+            'columns' => array_map(fn ($column) => $column->toProp($this), $columns),
             ...$this->getListProps(),
         ];
     }
