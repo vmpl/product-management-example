@@ -2,7 +2,7 @@
     <CrudLayout title="Crud | Grid" :list="models">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Crud | Grid
+                {{ $t('Crud | Grid') }}
             </h2>
         </template>
 

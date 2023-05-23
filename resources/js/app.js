@@ -9,6 +9,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 
 import {Dialog, Quasar} from 'quasar';
+import route from "ziggy-js/src/js/index.js";
+import {i18nVue} from "laravel-vue-i18n";
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
 
@@ -16,7 +18,7 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        return createApp({ render: () => h(App, props) })
+        const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(Quasar, {
@@ -27,7 +29,15 @@ createInertiaApp({
 
                 }
             })
-            .mount(el);
+            .use(i18nVue, {
+                resolve: async lang => {
+                    const languages = import.meta.glob('../../lang/*.json');
+                    return await languages[`../../lang/${lang}.json`]();
+                }
+            })
+        app.config.globalProperties.$route = route;
+
+        return app.mount(el);
     },
     progress: {
         color: '#4B5563',

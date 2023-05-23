@@ -7,6 +7,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import LanguageDropdown from "../Components/LanguageDropdown.vue";
 
 defineProps({
     title: String,
@@ -46,6 +47,8 @@ const logout = () => {
                                 </Link>
                             </div>
 
+                            <LanguageDropdown class="q-px-md"/>
+
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('crud')" :active="route().current('crud')">
@@ -54,7 +57,7 @@ const logout = () => {
                             </div>
                         </div>
 
-                        <div class="hidden sm:flex sm:items-center sm:ml-6">
+                        <div class="hidden sm:flex sm:items-center sm:ml-6 sm:place-self-end">
                             <div class="ml-3 relative">
                                 <!-- Teams Dropdown -->
                                 <Dropdown v-if="$page.props.jetstream.hasTeamFeatures" align="right" width="60">

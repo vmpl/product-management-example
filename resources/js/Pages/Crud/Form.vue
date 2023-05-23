@@ -2,7 +2,7 @@
     <CrudLayout title="Form | Crud" :list="models">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Form | Crud
+                {{ $t('Form | Crud') }}
             </h2>
         </template>
 
@@ -23,7 +23,7 @@
         </q-form>
     </CrudLayout>
 </template>
-<script>
+<script lang="ts">
 import CrudLayout from "../../Layouts/CrudLayout.vue";
 import SelectChildren from "../../Components/SelectChildren.vue";
 import {router} from "@inertiajs/vue3";
