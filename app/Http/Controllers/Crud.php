@@ -132,7 +132,7 @@ class Crud extends Controller
         }
 
         $fields = array_map(
-            fn($field) => ['key' => $field->getName(), 'value' => $field->decode($request->safe()->offsetGet($field->getName()))],
+            fn($field) => ['key' => $field->getName(), 'value' => $field->decode(@$request->safe()[$field->getName()])],
             $fields,
         );
         $fields = array_column($fields, 'value', 'key');

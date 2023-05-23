@@ -24,7 +24,7 @@ class Product extends Model
     public string $name;
 
     #[Grid\Column('Number')]
-    #[Form\Field('Number', validationRules: 'integer')]
+    #[Form\Field('Number', validationRules: 'nullable|integer')]
     public ?int $number;
 
     #[Grid\Column('Created')]
@@ -35,17 +35,37 @@ class Product extends Model
 
     protected $table = 'product_base';
 
+    protected $fillable = ['name', 'number'];
+
     protected static function booted()
     {
         static::addGlobalScope(new Teams);
+        static::saving(function (self $product) {
+            if ($product->isDirty('number')) {
+                $numberOriginal = $product->getOriginal('number');
+                $number = $product->getAttribute('number');
+
+                if ($numberOriginal !== null) {
+                    ProductImage::find($numberOriginal)->delete();
+                }
+
+                if ($number !== null) {
+                    ProductImage::fetchImageIfNotAvailable($number);
+                }
+            }
+        });
+        static::deleted(function (self $product) {
+            $number = $product->getAttribute('number');
+            if ($number !== null) {
+                ProductImage::find($number)->delete();
+            }
+        });
     }
 
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
-
-    protected $fillable = ['name', 'number'];
 
     public function save(array $options = [])
     {
