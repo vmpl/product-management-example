@@ -190,5 +190,10 @@ return [
     'eloquent_crud' => [
         \App\Models\Product::class,
         \App\Models\Pack::class,
-    ]
+    ],
+
+    'available_locales' => [
+        'en' => 'English',
+        'pl' => 'Polish'
+    ],
 ];

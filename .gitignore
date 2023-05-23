@@ -1,7 +1,5 @@
 /.phpunit.cache
 /bootstrap/ssr
-/bootstrap/ssr
-/bootstrap/ssr
 /node_modules
 /public/build
 /public/hot
@@ -28,3 +26,4 @@ yarn-error.log
 .bash_history
 .ignore
 !.ignore/.gitkeep
+lang/php_*.json

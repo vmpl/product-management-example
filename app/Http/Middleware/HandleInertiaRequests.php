@@ -36,6 +36,10 @@ class HandleInertiaRequests extends Middleware
                     'location' => $request->url(),
                 ]);
             },
+            'locale' => [
+                'current' => app()->currentLocale(),
+                'available' => array_map(fn ($langauge) => __($langauge), config('app.available_locales', [])),
+            ]
         ]);
     }
 }

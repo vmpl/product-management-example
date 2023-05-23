@@ -25,6 +25,15 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('language/{locale}', function (string $locale) {
+    app()->setLocale($locale);
+    session()->put('locale', $locale);
+
+    return redirect()->back();
+})
+    ->where('locale', '\w+')
+    ->name('language');
+
 Route::get('/crud', [Crud::class, 'list'])
     ->name('crud');
 
