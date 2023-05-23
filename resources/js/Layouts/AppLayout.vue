@@ -39,7 +39,7 @@ const logout = () => {
                 <!-- Primary Navigation Menu -->
                 <div class="tw-max-w-7xl tw-mx-auto tw-px-4 sm:tw-px-6 lg:tw-px-8">
                     <div class="tw-flex tw-justify-between tw-h-16">
-                        <div class="tw-flex">
+                        <div class="app-navigation">
                             <!-- Logo -->
                             <div class="tw-shrink-0 tw-flex tw-items-center">
                                 <Link :href="route('dashboard')">
@@ -47,10 +47,10 @@ const logout = () => {
                                 </Link>
                             </div>
 
-                            <LanguageDropdown class="tw-q-px-md"/>
+                            <LanguageDropdown class="q-px-md"/>
 
                             <!-- Navigation Links -->
-                            <div class="tw-hidden tw-space-x-8 sm:tw-my-px sm:tw-ml-10 sm:tw-flex">
+                            <div class="tw-hidden tw-space-x-8 sm:tw-my-px sm:tw-flex">
                                 <NavLink :href="route('crud')" :active="route().current('crud')">
                                     CRUD
                                 </NavLink>
@@ -292,3 +292,10 @@ const logout = () => {
         </div>
     </div>
 </template>
+
+<style lang="scss">
+.app-navigation {
+    display: flex;
+    align-items: center;
+}
+</style>

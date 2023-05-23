@@ -1,7 +1,10 @@
 <template>
     <AppLayout :title="title">
         <template #header>
-            <slot name="header"/>
+            <div class="row content-center q-gutter-x-sm">
+                <q-btn icon="menu" color="primary" flat @click="leftNavOpen = !leftNavOpen"/>
+                <slot name="header"/>
+            </div>
         </template>
         <q-layout view="hHh lpR fFf">
             <q-drawer v-model="leftNavOpen">
