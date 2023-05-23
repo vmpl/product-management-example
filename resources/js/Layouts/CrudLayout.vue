@@ -18,7 +18,9 @@
                 </q-scroll-area>
             </q-drawer>
             <q-page-container>
-                <slot/>
+                <q-page class="q-px-lg q-py-md">
+                    <slot/>
+                </q-page>
             </q-page-container>
         </q-layout>
     </AppLayout>

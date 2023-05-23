@@ -1,7 +1,7 @@
 <template>
     <CrudLayout title="Crud" :list="models">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="tw-font-semibold tw-text-xl tw-text-gray-800 dark:tw-text-gray-200 tw-leading-tight">
                 Crud
             </h2>
         </template>

@@ -1,12 +1,12 @@
 <template>
     <CrudLayout title="Form | Crud" :list="models">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="tw-font-semibold tw-text-xl tw-text-gray-800 dark:tw-text-gray-200 tw-leading-tight">
                 {{ $t('Form | Crud') }}
             </h2>
         </template>
 
-        <q-form @submit.prevent="submit">
+        <q-form class="q-px-md q-gutter-y-lg" @submit.prevent="submit">
             <template v-for="field in fields" :key="field.name">
                 <component :is="field.component.type"
                            v-model="form[field.name]"
