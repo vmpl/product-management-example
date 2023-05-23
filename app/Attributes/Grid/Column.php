@@ -2,17 +2,23 @@
 
 namespace App\Attributes\Grid;
 
+use App\Attributes\Grid\Column\Component;
 use App\Providers\CrudAttributesService;
 
-#[\Attribute(\Attribute::TARGET_PROPERTY)]
+#[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD)]
 class Column implements \App\Attributes\PropAttribute
 {
+    public readonly \App\Attributes\GridComponent $component;
+
     public function __construct(
         protected readonly string $label,
         protected readonly bool $searchable = true,
         protected readonly bool $sortable = true,
-        protected ?\ReflectionProperty $reflection = null,
+        public readonly int $sortNumber = PHP_INT_MAX,
+        Component $component = Component::Default,
+        protected \ReflectionProperty|\ReflectionMethod|null $reflection = null,
     ) {
+        $this->component = $component->getConfig($this);
     }
 
     public function toProp(CrudAttributesService $attributesService): array
@@ -23,6 +29,7 @@ class Column implements \App\Attributes\PropAttribute
             'label' => (string)__($this->label),
             'sortable' => $this->sortable,
             'searchable' => $this->searchable,
+            'component' => $this->component->toProp($attributesService),
         ];
     }
 
