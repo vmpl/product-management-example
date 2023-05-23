@@ -33,7 +33,6 @@ services:
             PHP_IDE_CONFIG: serverName=localhost
         depends_on:
             - fpm
-
     web:
         image: 'nginx:1.19'
         volumes:
