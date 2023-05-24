@@ -49,7 +49,7 @@ class Product extends Model
                 $number = $product->getAttribute('number');
 
                 if ($numberOriginal !== null) {
-                    ProductImage::find($numberOriginal)->delete();
+                    ProductImage::find($numberOriginal)?->delete();
                 }
 
                 if ($number !== null) {
