@@ -92,7 +92,7 @@ const updatePassword = () => {
                 Saved.
             </ActionMessage>
 
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <PrimaryButton :class="{ 'tw-opacity-25': form.processing }" :disabled="form.processing">
                 Save
             </PrimaryButton>
         </template>

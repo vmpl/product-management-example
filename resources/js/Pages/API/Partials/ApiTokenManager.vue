@@ -118,7 +118,7 @@ const deleteApiToken = () => {
                     Created.
                 </ActionMessage>
 
-                <PrimaryButton :class="{ 'opacity-25': createApiTokenForm.processing }" :disabled="createApiTokenForm.processing">
+                <PrimaryButton :class="{ 'tw-opacity-25': createApiTokenForm.processing }" :disabled="createApiTokenForm.processing">
                     Create
                 </PrimaryButton>
             </template>
@@ -217,7 +217,7 @@ const deleteApiToken = () => {
 
                 <PrimaryButton
                     class="tw-ml-3"
-                    :class="{ 'opacity-25': updateApiTokenForm.processing }"
+                    :class="{ 'tw-opacity-25': updateApiTokenForm.processing }"
                     :disabled="updateApiTokenForm.processing"
                     @click="updateApiToken"
                 >
@@ -243,7 +243,7 @@ const deleteApiToken = () => {
 
                 <DangerButton
                     class="tw-ml-3"
-                    :class="{ 'opacity-25': deleteApiTokenForm.processing }"
+                    :class="{ 'tw-opacity-25': deleteApiTokenForm.processing }"
                     :disabled="deleteApiTokenForm.processing"
                     @click="deleteApiToken"
                 >

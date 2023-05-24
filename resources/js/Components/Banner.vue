@@ -13,11 +13,11 @@ watch(message, async () => {
 
 <template>
     <div>
-        <div v-if="show && message" :class="{ 'bg-indigo-500': style == 'success', 'bg-red-700': style == 'danger' }">
+        <div v-if="show && message" :class="{ 'tw-bg-indigo-500': style == 'success', 'tw-bg-red-700': style == 'danger' }">
             <div class="tw-max-w-screen-xl tw-mx-auto tw-py-2 tw-px-3 sm:tw-px-6 lg:tw-px-8">
                 <div class="tw-flex tw-items-center tw-justify-between tw-flex-wrap">
                     <div class="tw-w-0 tw-flex-1 tw-flex tw-items-center tw-min-w-0">
-                        <span class="tw-flex tw-p-2 tw-rounded-lg" :class="{ 'bg-indigo-600': style == 'success', 'bg-red-600': style == 'danger' }">
+                        <span class="tw-flex tw-p-2 tw-rounded-lg" :class="{ 'tw-bg-indigo-600': style == 'success', 'tw-bg-red-600': style == 'danger' }">
                             <svg v-if="style == 'success'" class="tw-h-5 tw-w-5 tw-text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
@@ -36,7 +36,7 @@ watch(message, async () => {
                         <button
                             type="button"
                             class="tw--mr-1 tw-flex tw-p-2 tw-rounded-md focus:tw-outline-none sm:tw--mr-2 tw-transition"
-                            :class="{ 'hover:bg-indigo-600 focus:bg-indigo-600': style == 'success', 'hover:bg-red-600 focus:bg-red-600': style == 'danger' }"
+                            :class="{ 'hover:tw-bg-indigo-600 focus:tw-bg-indigo-600': style == 'success', 'hover:tw-bg-red-600 focus:tw-bg-red-600': style == 'danger' }"
                             aria-label="Dismiss"
                             @click.prevent="show = false"
                         >

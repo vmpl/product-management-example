@@ -189,7 +189,7 @@ const disableTwoFactorAuthentication = () => {
             <div class="tw-mt-5">
                 <div v-if="! twoFactorEnabled">
                     <ConfirmsPassword @confirmed="enableTwoFactorAuthentication">
-                        <PrimaryButton type="button" :class="{ 'opacity-25': enabling }" :disabled="enabling">
+                        <PrimaryButton type="button" :class="{ 'tw-opacity-25': enabling }" :disabled="enabling">
                             Enable
                         </PrimaryButton>
                     </ConfirmsPassword>
@@ -201,7 +201,7 @@ const disableTwoFactorAuthentication = () => {
                             v-if="confirming"
                             type="button"
                             class="tw-mr-3"
-                            :class="{ 'opacity-25': enabling }"
+                            :class="{ 'tw-opacity-25': enabling }"
                             :disabled="enabling"
                         >
                             Confirm
@@ -229,7 +229,7 @@ const disableTwoFactorAuthentication = () => {
                     <ConfirmsPassword @confirmed="disableTwoFactorAuthentication">
                         <SecondaryButton
                             v-if="confirming"
-                            :class="{ 'opacity-25': disabling }"
+                            :class="{ 'tw-opacity-25': disabling }"
                             :disabled="disabling"
                         >
                             Cancel
@@ -239,7 +239,7 @@ const disableTwoFactorAuthentication = () => {
                     <ConfirmsPassword @confirmed="disableTwoFactorAuthentication">
                         <DangerButton
                             v-if="! confirming"
-                            :class="{ 'opacity-25': disabling }"
+                            :class="{ 'tw-opacity-25': disabling }"
                             :disabled="disabling"
                         >
                             Disable
