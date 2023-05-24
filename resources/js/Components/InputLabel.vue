@@ -1,0 +1,12 @@
+<script setup>
+defineProps({
+    value: String,
+});
+</script>
+
+<template>
+    <label class="tw-block tw-font-medium tw-text-sm tw-text-gray-700 dark:tw-text-gray-300">
+        <span v-if="value">{{ value }}</span>
+        <span v-else><slot /></span>
+    </label>
+</template>
