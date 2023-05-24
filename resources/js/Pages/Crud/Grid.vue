@@ -1,7 +1,7 @@
 <template>
     <CrudLayout title="Crud | Grid" :list="models">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="tw-font-semibold tw-text-xl tw-text-gray-800 dark:tw-text-gray-200 tw-leading-tight">
                 {{ $t('Crud | Grid') }}
             </h2>
         </template>
@@ -11,12 +11,16 @@
                 <q-select :options="actions"
                           v-model="chosenAction"
                           label="Action"
-                          class="bg-white"
+                          dense
+                          outlined
                           clearable
+                          options-cover
+                          style="width: 150px"
                 />
                 <q-btn
-                    class="bg-white"
                     label="Run"
+                    color="primary"
+                    flat
                     @click="() => submitMassAction()"
                     :disable="disableMassAction"
                 />

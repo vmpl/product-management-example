@@ -1,13 +1,13 @@
 <template>
     <q-select
-        v-model="selectionRead"
-        class="bg-white"
-        multiple
-        use-chips
         :label="label"
+        v-model="selectionRead"
         @click.prevent.stop="() => $refs.gridDialog.show()"
         :rules="rules"
         :lazy-rules="lazyRules"
+        multiple
+        use-chips
+        outlined
     />
     <q-dialog ref="gridDialog">
         <ModelGrid

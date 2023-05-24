@@ -2,6 +2,7 @@
     <q-select
         v-model="current"
         :options="available"
+        dense
         borderless
         options-cover
     />

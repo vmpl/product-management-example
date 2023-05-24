@@ -15,17 +15,17 @@ defineProps({
 <template>
     <AppLayout title="Team Settings">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="tw-font-semibold tw-text-xl tw-text-gray-800 dark:tw-text-gray-200 tw-leading-tight">
                 Team Settings
             </h2>
         </template>
 
         <div>
-            <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+            <div class="tw-max-w-7xl tw-mx-auto tw-py-10 sm:tw-px-6 lg:tw-px-8">
                 <UpdateTeamNameForm :team="team" :permissions="permissions" />
 
                 <TeamMemberManager
-                    class="mt-10 sm:mt-0"
+                    class="tw-mt-10 sm:tw-mt-0"
                     :team="team"
                     :available-roles="availableRoles"
                     :user-permissions="permissions"
@@ -34,7 +34,7 @@ defineProps({
                 <template v-if="permissions.canDeleteTeam && ! team.personal_team">
                     <SectionBorder />
 
-                    <DeleteTeamForm class="mt-10 sm:mt-0" :team="team" />
+                    <DeleteTeamForm class="tw-mt-10 sm:tw-mt-0" :team="team" />
                 </template>
             </div>
         </div>

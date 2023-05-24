@@ -63,9 +63,9 @@
             </q-td>
         </template>
         <template v-slot:body-cell-actions="props">
-            <q-td auto-width class="q-gutter-x-sm">
-                <q-btn icon="edit" @click.stop="() => onEdit(props)"/>
-                <q-btn icon="delete" @click.stop="() => confirmDelete(props)"/>
+            <q-td auto-width class="tw-q-gutter-x-md">
+                <q-btn flat icon="edit" color="warning" @click.stop="() => onEdit(props)"/>
+                <q-btn flat icon="delete" color="negative" @click.stop="() => confirmDelete(props)"/>
             </q-td>
         </template>
     </q-table>

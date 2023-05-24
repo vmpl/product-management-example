@@ -45,7 +45,7 @@ const submit = () => {
             <AuthenticationCardLogo />
         </template>
 
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <div class="tw-mb-4 tw-text-sm tw-text-gray-600 dark:tw-text-gray-400">
             <template v-if="! recovery">
                 Please confirm access to your account by entering the authentication code provided by your authenticator application.
             </template>
@@ -64,11 +64,11 @@ const submit = () => {
                     v-model="form.code"
                     type="text"
                     inputmode="numeric"
-                    class="mt-1 block w-full"
+                    class="tw-mt-1 tw-block tw-w-full"
                     autofocus
                     autocomplete="one-time-code"
                 />
-                <InputError class="mt-2" :message="form.errors.code" />
+                <InputError class="tw-mt-2" :message="form.errors.code" />
             </div>
 
             <div v-else>
@@ -78,14 +78,14 @@ const submit = () => {
                     ref="recoveryCodeInput"
                     v-model="form.recovery_code"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="tw-mt-1 tw-block tw-w-full"
                     autocomplete="one-time-code"
                 />
-                <InputError class="mt-2" :message="form.errors.recovery_code" />
+                <InputError class="tw-mt-2" :message="form.errors.recovery_code" />
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <button type="button" class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 underline cursor-pointer" @click.prevent="toggleRecovery">
+            <div class="tw-flex tw-items-center tw-justify-end tw-mt-4">
+                <button type="button" class="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400 hover:tw-text-gray-900 tw-underline tw-cursor-pointer" @click.prevent="toggleRecovery">
                     <template v-if="! recovery">
                         Use a recovery code
                     </template>
@@ -95,7 +95,7 @@ const submit = () => {
                     </template>
                 </button>
 
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="tw-ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Log in
                 </PrimaryButton>
             </div>

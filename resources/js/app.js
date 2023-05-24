@@ -1,6 +1,6 @@
 import './bootstrap';
 import '@quasar/extras/material-icons/material-icons.css'
-import '../css/quasar.sass';
+import 'quasar/src/css/index.sass';
 import '../css/app.css';
 
 import { createApp, h } from 'vue';
@@ -26,7 +26,7 @@ createInertiaApp({
                     Dialog,
                 },
                 config: {
-
+                    dark: true,
                 }
             })
             .use(i18nVue, {

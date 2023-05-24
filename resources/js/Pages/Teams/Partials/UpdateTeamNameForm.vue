@@ -36,15 +36,15 @@ const updateTeamName = () => {
 
         <template #form>
             <!-- Team Owner Information -->
-            <div class="col-span-6">
+            <div class="tw-col-span-6">
                 <InputLabel value="Team Owner" />
 
-                <div class="flex items-center mt-2">
-                    <img class="w-12 h-12 rounded-full object-cover" :src="team.owner.profile_photo_url" :alt="team.owner.name">
+                <div class="tw-flex tw-items-center tw-mt-2">
+                    <img class="tw-w-12 tw-h-12 tw-rounded-full tw-object-cover" :src="team.owner.profile_photo_url" :alt="team.owner.name">
 
-                    <div class="ml-4 leading-tight">
-                        <div class="text-gray-900 dark:text-white">{{ team.owner.name }}</div>
-                        <div class="text-gray-700 dark:text-gray-300 text-sm">
+                    <div class="tw-ml-4 tw-leading-tight">
+                        <div class="tw-text-gray-900 dark:tw-text-white">{{ team.owner.name }}</div>
+                        <div class="tw-text-gray-700 dark:tw-text-gray-300 tw-text-sm">
                             {{ team.owner.email }}
                         </div>
                     </div>
@@ -52,23 +52,23 @@ const updateTeamName = () => {
             </div>
 
             <!-- Team Name -->
-            <div class="col-span-6 sm:col-span-4">
+            <div class="tw-col-span-6 sm:tw-col-span-4">
                 <InputLabel for="name" value="Team Name" />
 
                 <TextInput
                     id="name"
                     v-model="form.name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="tw-mt-1 tw-block tw-w-full"
                     :disabled="! permissions.canUpdateTeam"
                 />
 
-                <InputError :message="form.errors.name" class="mt-2" />
+                <InputError :message="form.errors.name" class="tw-mt-2" />
             </div>
         </template>
 
         <template v-if="permissions.canUpdateTeam" #actions>
-            <ActionMessage :on="form.recentlySuccessful" class="mr-3">
+            <ActionMessage :on="form.recentlySuccessful" class="tw-mr-3">
                 Saved.
             </ActionMessage>
 
