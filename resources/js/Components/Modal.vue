@@ -47,11 +47,11 @@ onUnmounted(() => {
 
 const maxWidthClass = computed(() => {
     return {
-        'sm': 'sm:max-w-sm',
-        'md': 'sm:max-w-md',
-        'lg': 'sm:max-w-lg',
-        'xl': 'sm:max-w-xl',
-        '2xl': 'sm:max-w-2xl',
+        'sm': 'sm:tw-max-w-sm',
+        'md': 'sm:tw-max-w-md',
+        'lg': 'sm:tw-max-w-lg',
+        'xl': 'sm:tw-max-w-xl',
+        '2xl': 'sm:tw-max-w-2xl',
     }[props.maxWidth];
 });
 </script>

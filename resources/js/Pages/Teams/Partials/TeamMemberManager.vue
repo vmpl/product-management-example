@@ -135,13 +135,13 @@ const displayableRole = (role) => {
                                 :key="role.key"
                                 type="button"
                                 class="tw-relative tw-px-4 tw-py-3 tw-inline-flex tw-w-full tw-rounded-lg focus:tw-z-10 focus:tw-outline-none focus:tw-border-indigo-500 dark:focus:tw-border-indigo-600 focus:tw-ring-2 focus:tw-ring-indigo-500 dark:focus:tw-ring-indigo-600"
-                                :class="{'border-t border-gray-200 dark:border-gray-700 focus:border-none rounded-t-none': i > 0, 'rounded-b-none': i != Object.keys(availableRoles).length - 1}"
+                                :class="{'tw-border-t tw-border-gray-200 dark:tw-border-gray-700 focus:tw-border-none tw-rounded-t-none': i > 0, 'tw-rounded-b-none': i != Object.keys(availableRoles).length - 1}"
                                 @click="addTeamMemberForm.role = role.key"
                             >
-                                <div :class="{'opacity-50': addTeamMemberForm.role && addTeamMemberForm.role != role.key}">
+                                <div :class="{'tw-opacity-50': addTeamMemberForm.role && addTeamMemberForm.role != role.key}">
                                     <!-- Role Name -->
                                     <div class="tw-flex tw-items-center">
-                                        <div class="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400" :class="{'font-semibold': addTeamMemberForm.role == role.key}">
+                                        <div class="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400" :class="{'tw-font-semibold': addTeamMemberForm.role == role.key}">
                                             {{ role.name }}
                                         </div>
 
@@ -165,7 +165,7 @@ const displayableRole = (role) => {
                         Added.
                     </ActionMessage>
 
-                    <PrimaryButton :class="{ 'opacity-25': addTeamMemberForm.processing }" :disabled="addTeamMemberForm.processing">
+                    <PrimaryButton :class="{ 'tw-opacity-25': addTeamMemberForm.processing }" :disabled="addTeamMemberForm.processing">
                         Add
                     </PrimaryButton>
                 </template>
@@ -285,13 +285,13 @@ const displayableRole = (role) => {
                             :key="role.key"
                             type="button"
                             class="tw-relative tw-px-4 tw-py-3 tw-inline-flex tw-w-full tw-rounded-lg focus:tw-z-10 focus:tw-outline-none focus:tw-border-indigo-500 dark:focus:tw-border-indigo-600 focus:tw-ring-2 focus:tw-ring-indigo-500 dark:focus:tw-ring-indigo-600"
-                            :class="{'border-t border-gray-200 dark:border-gray-700 focus:border-none rounded-t-none': i > 0, 'rounded-b-none': i !== Object.keys(availableRoles).length - 1}"
+                            :class="{'tw-border-t tw-border-gray-200 dark:tw-border-gray-700 focus:tw-border-none tw-rounded-t-none': i > 0, 'tw-rounded-b-none': i !== Object.keys(availableRoles).length - 1}"
                             @click="updateRoleForm.role = role.key"
                         >
-                            <div :class="{'opacity-50': updateRoleForm.role && updateRoleForm.role !== role.key}">
+                            <div :class="{'tw-opacity-50': updateRoleForm.role && updateRoleForm.role !== role.key}">
                                 <!-- Role Name -->
                                 <div class="tw-flex tw-items-center">
-                                    <div class="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400" :class="{'font-semibold': updateRoleForm.role === role.key}">
+                                    <div class="tw-text-sm tw-text-gray-600 dark:tw-text-gray-400" :class="{'tw-font-semibold': updateRoleForm.role === role.key}">
                                         {{ role.name }}
                                     </div>
 
@@ -317,7 +317,7 @@ const displayableRole = (role) => {
 
                 <PrimaryButton
                     class="tw-ml-3"
-                    :class="{ 'opacity-25': updateRoleForm.processing }"
+                    :class="{ 'tw-opacity-25': updateRoleForm.processing }"
                     :disabled="updateRoleForm.processing"
                     @click="updateRole"
                 >
@@ -343,7 +343,7 @@ const displayableRole = (role) => {
 
                 <DangerButton
                     class="tw-ml-3"
-                    :class="{ 'opacity-25': leaveTeamForm.processing }"
+                    :class="{ 'tw-opacity-25': leaveTeamForm.processing }"
                     :disabled="leaveTeamForm.processing"
                     @click="leaveTeam"
                 >
@@ -369,7 +369,7 @@ const displayableRole = (role) => {
 
                 <DangerButton
                     class="tw-ml-3"
-                    :class="{ 'opacity-25': removeTeamMemberForm.processing }"
+                    :class="{ 'tw-opacity-25': removeTeamMemberForm.processing }"
                     :disabled="removeTeamMemberForm.processing"
                     @click="removeTeamMember"
                 >

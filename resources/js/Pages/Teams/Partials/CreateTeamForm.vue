@@ -58,7 +58,7 @@ const createTeam = () => {
         </template>
 
         <template #actions>
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <PrimaryButton :class="{ 'tw-opacity-25': form.processing }" :disabled="form.processing">
                 Create
             </PrimaryButton>
         </template>
