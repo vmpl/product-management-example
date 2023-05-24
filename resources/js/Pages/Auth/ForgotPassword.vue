@@ -52,7 +52,7 @@ const submit = () => {
             </div>
 
             <div class="tw-flex tw-items-center tw-justify-end tw-mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton :class="{ 'tw-opacity-25': form.processing }" :disabled="form.processing">
                     Email Password Reset Link
                 </PrimaryButton>
             </div>

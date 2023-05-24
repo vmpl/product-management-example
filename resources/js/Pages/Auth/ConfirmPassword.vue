@@ -54,7 +54,7 @@ const submit = () => {
             </div>
 
             <div class="tw-flex tw-justify-end tw-mt-4">
-                <PrimaryButton class="tw-ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="tw-ml-4" :class="{ 'tw-opacity-25': form.processing }" :disabled="form.processing">
                     Confirm
                 </PrimaryButton>
             </div>

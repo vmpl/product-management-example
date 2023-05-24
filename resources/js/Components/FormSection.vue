@@ -22,7 +22,7 @@ const hasActions = computed(() => !! useSlots().actions);
             <form @submit.prevent="$emit('submitted')">
                 <div
                     class="tw-px-4 tw-py-5 tw-bg-white dark:tw-bg-gray-800 sm:tw-p-6 tw-shadow"
-                    :class="hasActions ? 'sm:rounded-tl-md sm:rounded-tr-md' : 'sm:rounded-md'"
+                    :class="hasActions ? 'sm:tw-rounded-tl-md sm:tw-rounded-tr-md' : 'sm:tw-rounded-md'"
                 >
                     <div class="tw-grid tw-grid-cols-6 tw-gap-6">
                         <slot name="form" />

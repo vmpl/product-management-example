@@ -36,7 +36,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 
         <form @submit.prevent="submit">
             <div class="tw-mt-4 tw-flex tw-items-center tw-justify-between">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton :class="{ 'tw-opacity-25': form.processing }" :disabled="form.processing">
                     Resend Verification Email
                 </PrimaryButton>
 

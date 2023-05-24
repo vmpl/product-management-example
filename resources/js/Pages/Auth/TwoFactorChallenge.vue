@@ -95,7 +95,7 @@ const submit = () => {
                     </template>
                 </button>
 
-                <PrimaryButton class="tw-ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton class="tw-ml-4" :class="{ 'tw-opacity-25': form.processing }" :disabled="form.processing">
                     Log in
                 </PrimaryButton>
             </div>

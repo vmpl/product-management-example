@@ -12,7 +12,7 @@ const props = defineProps({
     },
     contentClasses: {
         type: Array,
-        default: () => ['py-1', 'bg-white dark:bg-gray-700'],
+        default: () => ['tw-py-1', 'tw-bg-white dark:tw-bg-gray-700'],
     },
 });
 
@@ -29,20 +29,20 @@ onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 
 const widthClass = computed(() => {
     return {
-        '48': 'w-48',
+        'tw-48': 'tw-w-48',
     }[props.width.toString()];
 });
 
 const alignmentClasses = computed(() => {
     if (props.align === 'left') {
-        return 'origin-top-left left-0';
+        return 'tw-origin-top-left tw-left-0';
     }
 
     if (props.align === 'right') {
-        return 'origin-top-right right-0';
+        return 'tw-origin-top-right tw-right-0';
     }
 
-    return 'origin-top';
+    return 'tw-origin-top';
 });
 </script>
 

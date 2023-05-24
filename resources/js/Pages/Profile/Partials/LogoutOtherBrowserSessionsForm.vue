@@ -128,7 +128,7 @@ const closeModal = () => {
 
                     <PrimaryButton
                         class="tw-ml-3"
-                        :class="{ 'opacity-25': form.processing }"
+                        :class="{ 'tw-opacity-25': form.processing }"
                         :disabled="form.processing"
                         @click="logoutOtherBrowserSessions"
                     >
